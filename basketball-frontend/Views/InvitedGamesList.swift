@@ -21,7 +21,6 @@ struct InvitedGamesList: View {
 						self.viewModel.currentTab = "home"
 					}
 			}
-		
 			Text("Your Invites")
 				.font(.largeTitle)
 				.foregroundColor(Color("tabBarIconColor"))

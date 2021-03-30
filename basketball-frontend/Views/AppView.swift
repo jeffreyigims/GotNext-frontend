@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct AppView: View {
   @ObservedObject var viewModel: ViewModel = ViewModel()
@@ -18,20 +19,22 @@ struct AppView: View {
         VStack {
           
           if viewModel.currentTab == "home" {
-            HomeView(viewModel: viewModel)
+            HomeView(viewModel: viewModel, settingLocation: $viewModel.settingLocation, selectedLocation: $viewModel.selectedLocation)
           }
           
           else if viewModel.currentTab == "profile" {
-            ProfileView(viewModel: viewModel)
+            ProfileView(viewModel: viewModel, favorites: viewModel.favorites)
           }
           else if viewModel.currentTab == "invites" {
             InvitedGamesList(viewModel: viewModel)
           }
-          TabBarView(viewModel: viewModel, geometry: geometry)
+          if !viewModel.settingLocation {
+            TabBarView(viewModel: viewModel, geometry: geometry)
+          }
         }
       }
       .edgesIgnoringSafeArea(.bottom)
-      .sheet(isPresented: $viewModel.showingSheet, content: sheetContent)
+      .sheet(isPresented: $viewModel.showingSheet, content: sheetContent) 
     } else if viewModel.currentScreen == "login-splash" {
       SplashView()
     } else if viewModel.currentScreen == "create-user" {
@@ -39,7 +42,7 @@ struct AppView: View {
     } else if viewModel.currentScreen == "login" {
       LoginView(viewModel: self.viewModel)
     } else if viewModel.currentScreen == "landing" {
-      LandingView(viewModel: self.viewModel)
+      LandingView(viewModel: self.viewModel).onAppear { self.viewModel.login(username: "jigims", password: "secret") }
     } else {
       SplashView()
         .onAppear { self.viewModel.login(username: "jxu", password: "secret") }
@@ -61,10 +64,19 @@ extension AppView {
     case .showingDetails:
       NavigationView {
         GameDetailsView(viewModel: self.viewModel, player: $viewModel.player, game: $viewModel.game)
-					.navigationBarTitle("")
-					.navigationBarHidden(true)
+          .navigationBarTitle("")
+          .navigationBarHidden(true)
       }
-
+    case .selectingLocation:
+      if let pl = Helper.CLtoMK(placemark: viewModel.selectedLocation) {
+//        let a = print(pl)
+        NavigationView {
+          CreateFormView(viewModel: viewModel, location: MKMapItem(placemark: pl))
+        }
+      }
+    //      NavigationView {
+    //        CreateFormView(viewModel: viewModel, location: nil, placemark: viewModel.selectedLocation)
+    //      }
     case .searchingUsers:
       UsersSearchView(viewModel: viewModel)
     }

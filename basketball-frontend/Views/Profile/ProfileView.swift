@@ -10,12 +10,14 @@ import SwiftUI
 
 struct ProfileView: View {
   @ObservedObject var viewModel: ViewModel
+  @State var favorites: [Favorite]
   
   var body: some View {
     NavigationView {
       VStack {
         Image("default-profile")
           .resizable()
+          .frame(width: 64.0, height: 64.0)
           .scaledToFit()
           .clipShape(Circle())
           .overlay(
@@ -45,7 +47,7 @@ struct ProfileView: View {
         }
         
         List {
-          ForEach(viewModel.favorites) { favorite in
+          ForEach(favorites) { favorite in
             FavoriteRow(favorite: favorite, viewModel: self.viewModel)
           }
         }
@@ -73,6 +75,6 @@ struct ProfileView: View {
 
 struct ProfileView_Previews: PreviewProvider {
   static var previews: some View {
-    ProfileView(viewModel: ViewModel())
+    ProfileView(viewModel: ViewModel(), favorites: [Favorite]())
   }
 }

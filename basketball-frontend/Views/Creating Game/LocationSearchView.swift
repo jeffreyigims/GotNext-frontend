@@ -28,10 +28,19 @@ struct LocationSearchView: View {
         List {
           ForEach(searchResults, id: \.self) { result in
             NavigationLink(destination: CreateFormView(viewModel: viewModel, location: result)) {
-              VStack(alignment: .leading) {
-                Text(result.name ?? "").bold()
-                Text(Helper.parseAddress(selectedItem: result.placemark))
+              HStack {
+                Image(systemName: "mappin.circle.fill").font(Font.system(.largeTitle))
+                VStack(alignment: .leading) {
+                  Text(result.name ?? "").bold()
+                  Text(Helper.parseAddress(selectedItem: result.placemark))
+                }
               }
+            }.buttonStyle(PlainButtonStyle())
+          }
+          Button(action: { viewModel.setLocation() }) {
+            HStack {
+              Image(systemName: "mappin.circle.fill").font(Font.system(.largeTitle))
+              Text("Set location on map")
             }
           }
         }
@@ -48,7 +57,7 @@ struct LocationSearchView: View {
         print("Error: \(error?.localizedDescription ?? "Unknown error").")
         return
       }
-      self.searchResults = response.mapItems
+      self.searchResults = Array<MKMapItem>((response.mapItems.prefix(5)))
     }
   }
 }

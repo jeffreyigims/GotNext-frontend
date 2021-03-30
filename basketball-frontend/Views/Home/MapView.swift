@@ -12,19 +12,38 @@ import MapKit
 struct MapView: UIViewRepresentable {
   @ObservedObject var viewModel: ViewModel
   @Binding var gameAnnotations: [GameAnnotation]
+  @Binding var centerLocation: CenterAnnotation
+  @Binding var selectedLocation: CLPlacemark?
+  @Binding var moving: Bool
   
   class Coordinator: NSObject, MKMapViewDelegate {
     var parent: MapView
     var gameAnnotations: [GameAnnotation]
+    var centerLocation: CenterAnnotation
+    var selectedLocation: CLPlacemark?
     
     init (_ parent: MapView) {
       self.parent = parent
       self.gameAnnotations = parent.gameAnnotations
+      self.centerLocation = parent.centerLocation
+      self.selectedLocation = parent.selectedLocation
+    }
+    
+    func mapViewWillStartLoadingMap(_ mapView: MKMapView) {
+//      parent.selectedLocation = MKMapItem(placemark: MKPlacemark(coordinate: mapView.centerCoordinate))
     }
     
     // Runs every time user interacts and moves map some way
     // Can possibly be used to make pins disappear at certain distance?
     func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
+      self.centerLocation.coordinate = mapView.centerCoordinate
+      parent.centerLocation.coordinate = mapView.centerCoordinate
+      //      print(self.centerLocation.coordinate)
+//      lookUpCenterLocation(coordinates: mapView.centerCoordinate,
+//                           //      parent.selectedLocation = MKMapItem(placemark: MKPlacemark(coordinate: mapView.centerCoordinate))
+//                           completionHandler: { loc in self.parent.selectedLocation = loc })
+      print("Moving")
+      self.parent.moving = true
     }
     
     // Used to change what the annotation view looks like
@@ -54,8 +73,34 @@ struct MapView: UIViewRepresentable {
         parent.viewModel.findPlayer(gameId: curr.id)  
       }
     }
-    
+        
     func mapView(_: MKMapView, didDeselect view: MKAnnotationView) {
+    }
+    
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+      self.centerLocation.coordinate = mapView.centerCoordinate
+      mapView.addAnnotation(self.centerLocation)
+//      print(self.centerLocation.coordinate)
+      lookUpCenterLocation(coordinates: mapView.centerCoordinate,
+                           //      parent.selectedLocation = MKMapItem(placemark: MKPlacemark(coordinate: mapView.centerCoordinate))
+                           completionHandler: { loc in self.parent.selectedLocation = loc })
+      print("Done")
+      self.parent.moving = false
+    }
+    
+    func lookUpCenterLocation(coordinates: CLLocationCoordinate2D, completionHandler: @escaping (CLPlacemark?) -> Void) {
+      let geocoder = CLGeocoder()
+      let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+      geocoder.reverseGeocodeLocation(location,
+                                      completionHandler: { (placemarks, error) in
+                                        if error == nil {
+                                          let loc = placemarks?[0]
+                                          completionHandler(loc)
+                                        }
+                                        else {
+                                          completionHandler(nil)
+                                        }
+                                      })
     }
   }
   
@@ -78,16 +123,17 @@ struct MapView: UIViewRepresentable {
     mapView.setRegion(region, animated: true)
     mapView.showsUserLocation = true
     return mapView
-    
   }
   
   func updateUIView(_ uiView: MKMapView, context: UIViewRepresentableContext<MapView>) {
     uiView.addAnnotations(viewModel.gameAnnotations)
+    uiView.addAnnotation(centerLocation)
+    print(self.centerLocation.coordinate)
   }
 }
 
-struct MapView_Previews: PreviewProvider {
-  static var previews: some View {
-    MapView(viewModel: ViewModel(), gameAnnotations: .constant([GameAnnotation]()))
-  }
-}
+//struct MapView_Previews: PreviewProvider {
+//  static var previews: some View {
+//    MapView(viewModel: ViewModel(), gameAnnotations: .constant([GameAnnotation]()))
+//  }
+//}
