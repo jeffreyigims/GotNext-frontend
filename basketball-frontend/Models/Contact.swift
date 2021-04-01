@@ -10,13 +10,31 @@ import Foundation
 import SwiftUI
 import Contacts
 
-class Contact: Identifiable, Comparable {
+class Contact: Identifiable, Comparable, Codable {
   
   // MARK: Properties
   var firstName: String = "Batman" // let's be honest, we all want Batman as a contact
   var lastName: String?
   var phone: CNPhoneNumber?
   var picture: Image?
+  
+  enum CodingKeys: String, CodingKey {
+    case firstName, lastName, phone
+  }
+  
+  func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(firstName, forKey: .firstName)
+    try container.encode(lastName, forKey: .lastName)
+    try container.encode(self.displayPhone(), forKey: .phone)
+  }
+  
+  required init(from decoder: Decoder) throws {
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    firstName = try values.decode(String.self, forKey: .firstName)
+    lastName = try values.decode(String.self, forKey: .lastName)
+    phone = try CNPhoneNumber(stringValue: values.decode(String.self, forKey: .phone))
+  }
   
   init(firstName: String = "Batman", lastName: String? = nil, phone: CNPhoneNumber? = nil, imagePath: String? = nil) {
     self.firstName = firstName
@@ -25,6 +43,15 @@ class Contact: Identifiable, Comparable {
     if let image = imagePath {   // Pass the name of an xcasset image here (use this for your previews!)
       self.picture = Image(image)
     }
+  }
+  
+  func asDictionary() -> [String : Any] {
+    let params: [String : Any] = [
+      "firstName": self.firstName,
+      "lastName" : self.lastName ?? "",
+      "phone" : self.displayPhone()
+    ]
+    return ["user": params]
   }
   
   func displayPhone() -> String {
@@ -60,3 +87,4 @@ class Contact: Identifiable, Comparable {
     return lhs.firstName < rhs.firstName
   }
 }
+

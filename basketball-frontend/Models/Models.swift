@@ -28,9 +28,6 @@ struct Users: Decodable, Identifiable {
   func displayName() -> String {
     return self.firstName + " " + self.lastName
   }
-//  static func < (lhs: Users, rhs: Users) -> Bool {
-//    if
-//  }
 }
 
 struct Games: Decodable, Encodable, Identifiable {
@@ -264,11 +261,4 @@ class NormalizingDecoder: JSONDecoder {
   }
 }
 
-enum Sheet: Identifiable {
-  case creatingGame, showingDetails, searchingUsers, selectingLocation
-  
-  var id: Int {
-    hashValue
-  }
-}
 

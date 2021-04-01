@@ -20,7 +20,7 @@ extension String {
    
    - returns: A new string made by appending 'aPath' to the receiver, preceded if necessary by a path separator. (String)
    
-  */
+   */
   func stringByAppendingPathComponent(aPath: String) -> String {
     let nsSt = self as NSString
     return nsSt.appendingPathComponent(aPath)
@@ -38,7 +38,7 @@ class Location: NSObject {
     self.longitude = 0.00
     super.init()
     print(dataFilePath())
-
+    
   }
   
   func getCurrentLocation() {
@@ -56,19 +56,19 @@ class Location: NSObject {
     }
     saveLocation()
   }
-    
+  
   func documentsDirectory() -> String {
     let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
     return paths[0]
   }
-
+  
   func dataFilePath() -> String {
     return documentsDirectory().stringByAppendingPathComponent(aPath: "Coordinates.plist")
   }
   
   func saveLocation() {
     let data = NSMutableData()
-    let archiver = NSKeyedArchiver(forWritingWith: data)
+    let archiver = NSKeyedArchiver(requiringSecureCoding: true)
     archiver.encode(self.latitude, forKey: "latitude")
     archiver.encode(self.longitude, forKey: "longitude")
     archiver.finishEncoding()
@@ -79,10 +79,14 @@ class Location: NSObject {
     let path = dataFilePath()
     if FileManager.default.fileExists(atPath: path) {
       if let data = NSData(contentsOfFile: path) {
-        let unarchiver = NSKeyedUnarchiver(forReadingWith: data as Data)
-        self.latitude = unarchiver.decodeDouble(forKey: "latitude")
-        self.longitude = unarchiver.decodeDouble(forKey: "longitude")
-        unarchiver.finishDecoding()
+        do {
+          let unarchiver = try NSKeyedUnarchiver(forReadingFrom: data as Data)
+          self.latitude = unarchiver.decodeDouble(forKey: "latitude")
+          self.longitude = unarchiver.decodeDouble(forKey: "longitude")
+          unarchiver.finishDecoding()
+        } catch {
+          print("Could not read data")
+        }
       } else {
         print("\nFILE NOT FOUND AT: \(path)")
       }

@@ -73,7 +73,7 @@ class Helper {
 //    dateFormatter.timeZone = TimeZone.current
     dateFormatter.timeZone = TimeZone(abbreviation: "EST")
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-    let t = dateFormatter.string(from: date)
+//    let t = dateFormatter.string(from: date)
     return dateFormatter.string(from: date)
   }
   

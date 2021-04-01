@@ -13,40 +13,7 @@ struct AppView: View {
   @ObservedObject var viewModel: ViewModel = ViewModel()
   
   var body: some View {
-    
-    if viewModel.currentScreen == "app" {
-      GeometryReader { geometry in
-        VStack {
-          
-          if viewModel.currentTab == "home" {
-            HomeView(viewModel: viewModel, settingLocation: $viewModel.settingLocation, selectedLocation: $viewModel.selectedLocation)
-          }
-          
-          else if viewModel.currentTab == "profile" {
-            ProfileView(viewModel: viewModel, favorites: viewModel.favorites)
-          }
-          else if viewModel.currentTab == "invites" {
-            InvitedGamesList(viewModel: viewModel)
-          }
-          if !viewModel.settingLocation {
-            TabBarView(viewModel: viewModel, geometry: geometry)
-          }
-        }
-      }
-      .edgesIgnoringSafeArea(.bottom)
-      .sheet(isPresented: $viewModel.showingSheet, content: sheetContent) 
-    } else if viewModel.currentScreen == "login-splash" {
-      SplashView()
-    } else if viewModel.currentScreen == "create-user" {
-      CreateUserView(viewModel: self.viewModel)
-    } else if viewModel.currentScreen == "login" {
-      LoginView(viewModel: self.viewModel)
-    } else if viewModel.currentScreen == "landing" {
-      LandingView(viewModel: self.viewModel).onAppear { self.viewModel.login(username: "jigims", password: "secret") }
-    } else {
-      SplashView()
-        .onAppear { self.viewModel.login(username: "jxu", password: "secret") }
-    }
+    pageContent().onAppear(perform: viewModel.tryLogin)
   }
 }
 
@@ -57,6 +24,41 @@ struct AppView_Previews: PreviewProvider {
 }
 
 extension AppView {
+  @ViewBuilder func pageContent() -> some View {
+    switch viewModel.currentScreen {
+    case .app:
+      GeometryReader { geometry in
+        VStack {
+          tabContent()
+          if !viewModel.settingLocation {
+            TabBarView(viewModel: viewModel, geometry: geometry)
+          }
+        }
+      }
+      .edgesIgnoringSafeArea(.bottom)
+      .sheet(isPresented: $viewModel.showingSheet, onDismiss: viewModel.dismiss, content: sheetContent)
+    case .loginSplash:
+      SplashView()
+    case .createUser:
+      CreateUserView(viewModel: self.viewModel)
+    case .login:
+      LoginView(viewModel: self.viewModel)
+    case .landing:
+      LandingView(viewModel: self.viewModel) // .onAppear { self.viewModel.login(username: "jigims", password: "secret") }
+    }
+  }
+  
+  @ViewBuilder func tabContent() -> some View {
+    switch viewModel.currentTab {
+    case .home:
+      HomeView(viewModel: viewModel, settingLocation: $viewModel.settingLocation, selectedLocation: $viewModel.selectedLocation)
+    case .profile:
+      ProfileView(viewModel: viewModel, favorites: viewModel.favorites)
+    case .invites:
+      InvitedGamesList(viewModel: viewModel)
+    }
+  }
+  
   @ViewBuilder func sheetContent() -> some View {
     switch viewModel.activeSheet {
     case .creatingGame:
@@ -69,16 +71,14 @@ extension AppView {
       }
     case .selectingLocation:
       if let pl = Helper.CLtoMK(placemark: viewModel.selectedLocation) {
-//        let a = print(pl)
         NavigationView {
           CreateFormView(viewModel: viewModel, location: MKMapItem(placemark: pl))
         }
       }
-    //      NavigationView {
-    //        CreateFormView(viewModel: viewModel, location: nil, placemark: viewModel.selectedLocation)
-    //      }
     case .searchingUsers:
       UsersSearchView(viewModel: viewModel)
     }
   }
 }
+
+

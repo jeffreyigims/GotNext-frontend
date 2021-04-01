@@ -24,7 +24,7 @@ struct TabBarView: View {
         .frame(width: geometry.size.width/3, height: 75)
         .foregroundColor(Color("tabBarIconColor"))
         .onTapGesture {
-          viewModel.currentTab = "home"
+          viewModel.currentTab = Tab.home
         }
       
       ZStack{
@@ -52,7 +52,7 @@ struct TabBarView: View {
         .padding(20)
         .frame(width: geometry.size.width/3, height: 75)
         .onTapGesture{
-          viewModel.currentTab = "profile"
+          viewModel.currentTab = Tab.profile
         }
     }
     .frame(width: geometry.size.width, height: geometry.size.height/10)

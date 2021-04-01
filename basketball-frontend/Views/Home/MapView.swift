@@ -30,19 +30,16 @@ struct MapView: UIViewRepresentable {
     }
     
     func mapViewWillStartLoadingMap(_ mapView: MKMapView) {
-//      parent.selectedLocation = MKMapItem(placemark: MKPlacemark(coordinate: mapView.centerCoordinate))
+      lookUpCenterLocation(coordinates: mapView.centerCoordinate,
+                           completionHandler: { loc in self.parent.selectedLocation = loc })
+      
     }
     
     // Runs every time user interacts and moves map some way
     // Can possibly be used to make pins disappear at certain distance?
     func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
-      self.centerLocation.coordinate = mapView.centerCoordinate
-      parent.centerLocation.coordinate = mapView.centerCoordinate
-      //      print(self.centerLocation.coordinate)
-//      lookUpCenterLocation(coordinates: mapView.centerCoordinate,
-//                           //      parent.selectedLocation = MKMapItem(placemark: MKPlacemark(coordinate: mapView.centerCoordinate))
-//                           completionHandler: { loc in self.parent.selectedLocation = loc })
-      print("Moving")
+//      self.centerLocation.coordinate = mapView.centerCoordinate
+//      parent.centerLocation.coordinate = mapView.centerCoordinate
       self.parent.moving = true
     }
     
@@ -73,18 +70,14 @@ struct MapView: UIViewRepresentable {
         parent.viewModel.findPlayer(gameId: curr.id)  
       }
     }
-        
+    
     func mapView(_: MKMapView, didDeselect view: MKAnnotationView) {
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-      self.centerLocation.coordinate = mapView.centerCoordinate
-      mapView.addAnnotation(self.centerLocation)
-//      print(self.centerLocation.coordinate)
+      print("Here")
       lookUpCenterLocation(coordinates: mapView.centerCoordinate,
-                           //      parent.selectedLocation = MKMapItem(placemark: MKPlacemark(coordinate: mapView.centerCoordinate))
                            completionHandler: { loc in self.parent.selectedLocation = loc })
-      print("Done")
       self.parent.moving = false
     }
     
@@ -127,8 +120,6 @@ struct MapView: UIViewRepresentable {
   
   func updateUIView(_ uiView: MKMapView, context: UIViewRepresentableContext<MapView>) {
     uiView.addAnnotations(viewModel.gameAnnotations)
-    uiView.addAnnotation(centerLocation)
-    print(self.centerLocation.coordinate)
   }
 }
 

@@ -15,6 +15,9 @@ struct ProfileView: View {
   var body: some View {
     NavigationView {
       VStack {
+        Button(action: viewModel.sendData) {
+          Text("Send Data")
+        }
         Image("default-profile")
           .resizable()
           .frame(width: 64.0, height: 64.0)

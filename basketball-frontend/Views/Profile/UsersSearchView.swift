@@ -27,7 +27,7 @@ struct UsersSearchView: View {
         UsersListView(viewModel: viewModel, users: $viewModel.searchResults)
       }.navigationBarTitle("Search Users")
     }
-    .onAppear { search() }
+//    .onAppear { search() }
   }
   
   func search() {

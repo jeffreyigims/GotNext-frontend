@@ -18,7 +18,7 @@ struct InvitedGamesList: View {
 				Image(systemName: "arrow.left")
 					.font(.system(size: 24))
 					.onTapGesture {
-						self.viewModel.currentTab = "home"
+            self.viewModel.currentTab = Tab.home
 					}
 			}
 			Text("Your Invites")

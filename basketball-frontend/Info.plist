@@ -8,8 +8,42 @@
 	<string>This app would like to use your current location. </string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
+<!--    <key>NSAllowsArbitraryLoads</key>-->
+<!--    <true/>-->
+<!--    <key>NSAllowsLocalNetworking</key>-->
+<!--    <true/>-->
+<!--    <key>NSTemporaryExceptionMinimumTLSVersion</key>-->
+<!--    <string>TLSv1.1</string>-->
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>secure-hollows-77457.herokuapp.com</key>
+			<dict>
+<!--        <key>NSAllowsLocalNetworking</key>-->
+<!--        <true/>-->
+        <key>NSIncludesSubdomains</key>
+        <true/>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+      <key>localhost</key>
+      <dict>
+<!--        <key>NSAllowsLocalNetworking</key>-->
+<!--        <true/>-->
+        <key>NSIncludesSubdomains</key>
+        <true/>
+        <key>NSExceptionAllowsInsecureHTTPLoads</key>
+        <true/>
+      </dict>
+<!--      <key>192.168.1.20.xip.io:3000</key>-->
+<!--      <dict>-->
+<!--        <key>NSIncludesSubdomains</key>-->
+<!--        <true/>-->
+<!--        <key>NSExceptionAllowsInsecureHTTPLoads</key>-->
+<!--        <true/>-->
+<!--        <key>NSTemporaryExceptionMinimumTLSVersion</key>-->
+<!--        <string>TLSv1.1</string>-->
+<!--      </dict>-->
+		</dict>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>

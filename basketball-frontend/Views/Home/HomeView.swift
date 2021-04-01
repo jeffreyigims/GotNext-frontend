@@ -16,29 +16,50 @@ struct HomeView: View {
   @Binding var selectedLocation: CLPlacemark?
   @State var centerLocation: CenterAnnotation = CenterAnnotation(id: 4, subtitle: "Subtitle", title: "Title", latitude: 20.0, longitude: 20.0)
   @State var moving: Bool = false
+  var CR: CGFloat = 20
   
   var body: some View {
     GeometryReader { geometry in
       ZStack(alignment: .topTrailing){
         
-        MapView(viewModel: self.viewModel, gameAnnotations: $viewModel.gameAnnotations, centerLocation: self.$centerLocation, selectedLocation: $selectedLocation, moving: $moving)
+        MapView(viewModel: self.viewModel, gameAnnotations: $viewModel.gameAnnotations, centerLocation: self.$centerLocation, selectedLocation: $selectedLocation, moving: $moving).edgesIgnoringSafeArea(.all)
+        
         if self.settingLocation == true {
+          Image(systemName: "mappin")
+            .resizable()
+            .frame(width: 20, height: 40)
+            .position(x: geometry.size.width/2, y: geometry.size.height/2-40)
+          
           if self.moving == false {
             VStack {
               Spacer()
               HStack {
                 Spacer()
-                Button(action: { viewModel.selectingLocation() }) {
-                  VStack {
+                VStack {
+                  Button(action: { viewModel.selectingLocation() }) {
                     Text("Select Location")
-                      .bold()
-                      .foregroundColor(.white)
-                    Text(Helper.parseCL(placemark: selectedLocation))
-                      .bold()
-                      .foregroundColor(.white)
-                      .background(Rectangle().fill(Color.black).shadow(radius: 3).frame(width: 300, height: 40))
-                      .padding(30)
-                      .padding(.bottom, 50)
+                      .padding()
+                      .frame(maxWidth: .infinity)
+                      .background(Color("primaryButtonColor"))
+                      .foregroundColor(.black)
+                      .cornerRadius(CR)
+                      .padding([.trailing, .leading])
+                    //                    Text(Helper.parseCL(placemark: selectedLocation))
+                    //                      .bold()
+                    //                      .foregroundColor(.white)
+                    //                      .background(Rectangle().fill(Color.black).shadow(radius: 3).frame(width: 300, height: 40))
+                    //                      .padding(30)
+                    //                      .padding(.bottom, 50)
+                  }
+                  Button(action: { viewModel.cancelSelectingLocation() }) {
+                    Text("Cancel")
+                      .padding()
+                      .frame(maxWidth: .infinity)
+                      .background(Color("secondaryButtonColor"))
+                      .foregroundColor(.black)
+                      .cornerRadius(CR)
+                      .padding([.trailing, .leading])
+                      .padding(.bottom, 34)
                   }
                 }
                 Spacer()
@@ -66,17 +87,17 @@ struct HomeView: View {
             }.offset(x: 20, y: -18)
           }
           .onTapGesture {
-            self.viewModel.currentTab = "invites"
+            self.viewModel.currentTab = Tab.invites
           }
           .offset(x: 50, y: 50)
           .shadow(color: .gray, radius: 2, x:1, y:1)
           // Content is passed as a closure to the bottom view
           BottomView(isOpen: self.$isOpen, maxHeight: geometry.size.height * 0.84) {
             GamesTableView(viewModel: self.viewModel)
-          }
+          }.edgesIgnoringSafeArea(.all)
         }
       }
-      .edgesIgnoringSafeArea(.all)
+      //      .edgesIgnoringSafeArea(.all)
     }
   }
 }
