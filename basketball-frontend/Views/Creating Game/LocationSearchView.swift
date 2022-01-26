@@ -10,9 +10,9 @@ import SwiftUI
 import MapKit
 
 struct LocationSearchView: View {
+  @EnvironmentObject var viewModel: ViewModel
   @State var locationSearch: String = ""
   @State var searchResults: [MKMapItem] = [MKMapItem]()
-  @ObservedObject var viewModel: ViewModel
   
   var body: some View {
     let locSearch = Binding(
@@ -22,29 +22,31 @@ struct LocationSearchView: View {
         search()
       }
     )
-    NavigationView {
-      VStack {
-        SearchBarView<MKMapItem>(searchText: locSearch)
-        List {
-          ForEach(searchResults, id: \.self) { result in
-            NavigationLink(destination: CreateFormView(viewModel: viewModel, location: result)) {
-              HStack {
-                Image(systemName: "mappin.circle.fill").font(Font.system(.largeTitle))
-                VStack(alignment: .leading) {
-                  Text(result.name ?? "").bold()
-                  Text(Helper.parseAddress(selectedItem: result.placemark))
-                }
-              }
-            }.buttonStyle(PlainButtonStyle())
-          }
-          Button(action: { viewModel.setLocation() }) {
+    VStack {
+      SimpleSearchBarView<MKMapItem>(searchText: locSearch)
+      List {
+        ForEach(searchResults, id: \.self) { result in
+          NavigationLink(destination: CreateFormView(location: result)) {
             HStack {
-              Image(systemName: "mappin.circle.fill").font(Font.system(.largeTitle))
-              Text("Set location on map")
+              Image(systemName: "mappin.circle.fill").imageScale(.large).foregroundColor(.red)
+              VStack(alignment: .leading) {
+                Text(result.name ?? "").font(.headline).lineLimit(1)
+                Text(Helper.parseAddress(selectedItem: result.placemark)).font(.subheadline).lineLimit(1)
+              }
             }
-          }
+          }.buttonStyle(PlainButtonStyle())
         }
-      }.navigationBarTitle("Select Location")
+        Button(action: { viewModel.setLocation() }) {
+          HStack {
+            Image(systemName: "mappin.circle.fill").imageScale(.large).foregroundColor(.red)
+            Text("Set location on map").font(.headline)
+            Spacer()
+            Image(systemName: chevronRight).imageScale(.small).foregroundColor(Color(UIColor.lightGray)).padding(.trailing, 7)
+          }.padding([.bottom, .top], 5)
+        }
+      }
+      .navigationBarTitle("Select Location")
+      .navigationBarTitleDisplayMode(.inline)
     }
   }
   
@@ -57,13 +59,20 @@ struct LocationSearchView: View {
         print("Error: \(error?.localizedDescription ?? "Unknown error").")
         return
       }
-      self.searchResults = Array<MKMapItem>((response.mapItems.prefix(5)))
+      if self.locationSearch == "" {
+        self.searchResults = []
+      } else {
+        self.searchResults = Array<MKMapItem>((response.mapItems.prefix(5)))
+      }
     }
   }
 }
 
 struct LocationSearchView_Previews: PreviewProvider {
+  static let viewModel: ViewModel = ViewModel()
   static var previews: some View {
-    LocationSearchView(viewModel: ViewModel())
+    NavigationView {
+      LocationSearchView().environmentObject(viewModel)
+    }
   }
 }

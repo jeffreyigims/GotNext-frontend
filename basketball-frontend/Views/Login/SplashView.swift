@@ -12,10 +12,10 @@ struct SplashView: View {
   
   var body: some View {
     VStack {
-			Image("logo")
+      Image("logo")
       Text("Warming up...")
         .font(Font.largeTitle)
-				.foregroundColor(Color("tabBarColor"))
+        .foregroundColor(Color("tabBarColor"))
     }
   }
 }

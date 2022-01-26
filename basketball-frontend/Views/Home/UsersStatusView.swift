@@ -9,20 +9,19 @@
 import SwiftUI
 
 struct UsersStatusView: View {
-  @ObservedObject var viewModel: ViewModel
+  @EnvironmentObject var viewModel: ViewModel
   @Binding var users: [Users]
   let status: String
   
   var body: some View {
-    NavigationView {
-      UsersListView(viewModel: viewModel, users: $users)
-        .navigationBarTitle(status + " Users")
-    }
+    UsersListView(users: users)
+//      .navigationBarTitle(status + " Users")
   }
 }
 
 struct UsersStatusView_Previews: PreviewProvider {
+  static let viewModel: ViewModel = ViewModel()
   static var previews: some View {
-    UsersStatusView(viewModel: ViewModel(), users: .constant([Users]()), status: "Going")
+    UsersStatusView(users: .constant([Users]()), status: "Going").environmentObject(viewModel)
   }
 }

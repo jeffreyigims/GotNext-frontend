@@ -2,47 +2,37 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
 	<key>NSContactsUsageDescription</key>
-	<string>This app would like to access your contacts.</string>
+	<string>This app would like to access your contacts so it can find your contacts who already have an account.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app would like to use your current location. </string>
+	<string>This app would like to use your current location so it can accurately show you nearby games. </string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-<!--    <key>NSAllowsArbitraryLoads</key>-->
-<!--    <true/>-->
-<!--    <key>NSAllowsLocalNetworking</key>-->
-<!--    <true/>-->
-<!--    <key>NSTemporaryExceptionMinimumTLSVersion</key>-->
-<!--    <string>TLSv1.1</string>-->
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>secure-hollows-77457.herokuapp.com</key>
+			<key>gotnext-backend.herokuapp.com</key>
 			<dict>
-<!--        <key>NSAllowsLocalNetworking</key>-->
-<!--        <true/>-->
-        <key>NSIncludesSubdomains</key>
-        <true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
-      <key>localhost</key>
-      <dict>
-<!--        <key>NSAllowsLocalNetworking</key>-->
-<!--        <true/>-->
-        <key>NSIncludesSubdomains</key>
-        <true/>
-        <key>NSExceptionAllowsInsecureHTTPLoads</key>
-        <true/>
-      </dict>
-<!--      <key>192.168.1.20.xip.io:3000</key>-->
-<!--      <dict>-->
-<!--        <key>NSIncludesSubdomains</key>-->
-<!--        <true/>-->
-<!--        <key>NSExceptionAllowsInsecureHTTPLoads</key>-->
-<!--        <true/>-->
-<!--        <key>NSTemporaryExceptionMinimumTLSVersion</key>-->
-<!--        <string>TLSv1.1</string>-->
-<!--      </dict>-->
+			<key>secure-hollows-77457.herokuapp.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 		</dict>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>

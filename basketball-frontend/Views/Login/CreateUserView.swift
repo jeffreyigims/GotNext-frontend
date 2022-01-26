@@ -10,8 +10,8 @@ import Foundation
 import SwiftUI
 
 struct CreateUserView: View {
-  @ObservedObject var viewModel: ViewModel
-  
+  @EnvironmentObject var viewModel: ViewModel
+
   @State var username: String = ""
   @State var firstname: String = ""
   @State var lastname: String = ""
@@ -22,39 +22,42 @@ struct CreateUserView: View {
   @State var passwordConfirmation: String = ""
   
   var body: some View {
-    
-    Form {
-      Section {
-        TextField("Username", text: $username)
-          .autocapitalization(.none)
-          .disableAutocorrection(true)
-        TextField("First Name", text: $firstname)
-          .disableAutocorrection(true)
-        TextField("Last Name", text: $lastname)
-          .disableAutocorrection(true)
-        DatePicker("Date of Birth", selection: $dob, in: ...Date(), displayedComponents: [.date])
-        TextField("Email", text: $email)
-          .autocapitalization(.none)
-          .disableAutocorrection(true)
-        TextField("Phone", text: $phone)
-          .autocapitalization(.none)
-          .disableAutocorrection(true)
-        SecureField("Password", text: $password)
-          .autocapitalization(.none)
-          .disableAutocorrection(true)
-        SecureField("Password Confirmation", text: $passwordConfirmation)
-          .autocapitalization(.none)
-          .disableAutocorrection(true)
+    NavigationView {
+      Form {
+        Section(header: Text("GENERAL")) {
+          TextField("Username", text: $username)
+            .autocapitalization(.none)
+            .disableAutocorrection(true)
+          TextField("First Name", text: $firstname)
+            .disableAutocorrection(true)
+          TextField("Last Name", text: $lastname)
+            .disableAutocorrection(true)
+          DatePicker("Date of Birth", selection: $dob, in: ...Date(), displayedComponents: [.date])
+          TextField("Email", text: $email)
+            .autocapitalization(.none)
+            .disableAutocorrection(true)
+          TextField("Phone", text: $phone)
+            .autocapitalization(.none)
+            .disableAutocorrection(true)
+        }
+        Section(header: Text("PASSWORD")) {
+          SecureField("Password", text: $password)
+            .autocapitalization(.none)
+            .disableAutocorrection(true)
+          SecureField("Password Confirmation", text: $passwordConfirmation)
+            .autocapitalization(.none)
+            .disableAutocorrection(true)
+        }
+        
+        Button(action: {
+          createUser()
+        }) {
+          Text("Sign Up")
+        }
+      }.navigationBarTitle("Create Your Profile")
+      .alert(isPresented: $viewModel.showAlert) {
+        viewModel.alert!
       }
-      
-      Button(action: {
-        createUser()
-      }) {
-        Text("Sign Up")
-      }
-    }.navigationBarTitle("Create Your Profile")
-    .alert(isPresented: $viewModel.showAlert) {
-      viewModel.alert!
     }
   }
   
@@ -65,6 +68,6 @@ struct CreateUserView: View {
 
 struct CreateUserView_Previews: PreviewProvider {
   static var previews: some View {
-    CreateUserView(viewModel: ViewModel())
+    CreateUserView()
   }
 }

@@ -11,21 +11,22 @@ import MapKit
 
 struct MapView: UIViewRepresentable {
   @ObservedObject var viewModel: ViewModel
-  @Binding var gameAnnotations: [GameAnnotation]
-  @Binding var centerLocation: CenterAnnotation
+  @Binding var games: [GameAnnotation]
+//  @Binding var centerLocation: CenterAnnotation
   @Binding var selectedLocation: CLPlacemark?
   @Binding var moving: Bool
+  var gameFocus: Game?
   
   class Coordinator: NSObject, MKMapViewDelegate {
     var parent: MapView
-    var gameAnnotations: [GameAnnotation]
-    var centerLocation: CenterAnnotation
+    var games: [GameAnnotation]
+//    var centerLocation: CenterAnnotation
     var selectedLocation: CLPlacemark?
     
     init (_ parent: MapView) {
       self.parent = parent
-      self.gameAnnotations = parent.gameAnnotations
-      self.centerLocation = parent.centerLocation
+      self.games = parent.games
+//      self.centerLocation = parent.centerLocation
       self.selectedLocation = parent.selectedLocation
     }
     
@@ -38,8 +39,6 @@ struct MapView: UIViewRepresentable {
     // Runs every time user interacts and moves map some way
     // Can possibly be used to make pins disappear at certain distance?
     func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
-//      self.centerLocation.coordinate = mapView.centerCoordinate
-//      parent.centerLocation.coordinate = mapView.centerCoordinate
       self.parent.moving = true
     }
     
@@ -75,7 +74,6 @@ struct MapView: UIViewRepresentable {
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-      print("Here")
       lookUpCenterLocation(coordinates: mapView.centerCoordinate,
                            completionHandler: { loc in self.parent.selectedLocation = loc })
       self.parent.moving = false
@@ -107,14 +105,25 @@ struct MapView: UIViewRepresentable {
     let userLocation = viewModel.userLocation
     userLocation.getCurrentLocation()
     userLocation.loadLocation()
-    let coordinate = CLLocationCoordinate2D(
-      latitude: userLocation.latitude,
-      longitude: userLocation.longitude
-    )
-    let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-    let region = MKCoordinateRegion(center: coordinate, span: span)
-    mapView.setRegion(region, animated: true)
+    if let game = gameFocus {
+      let coordinate = CLLocationCoordinate2D(
+        latitude: game.latitude,
+        longitude: game.longitude
+      )
+      let span = MKCoordinateSpan(latitudeDelta: 0.018, longitudeDelta: 0.018)
+      let region = MKCoordinateRegion(center: coordinate, span: span)
+      mapView.setRegion(region, animated: true)
+    } else {
+      let coordinate = CLLocationCoordinate2D(
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude
+      )
+      let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+      let region = MKCoordinateRegion(center: coordinate, span: span)
+      mapView.setRegion(region, animated: true)
+    }
     mapView.showsUserLocation = true
+    print("Make")
     return mapView
   }
   

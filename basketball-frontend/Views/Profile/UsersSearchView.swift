@@ -9,24 +9,24 @@
 import SwiftUI
 
 struct UsersSearchView: View {
-  @ObservedObject var viewModel: ViewModel
+  @EnvironmentObject var viewModel: ViewModel
   @State var userSearch: String = ""
   
   var body: some View {
     let usSearch = Binding(
-      get: {
-        self.userSearch },
+      get: { self.userSearch },
       set: {
         self.userSearch = $0;
         search()
       }
     )
-    NavigationView {
+//    NavigationView {
       VStack {
         SearchBarView<Users>(searchText: usSearch)
-        UsersListView(viewModel: viewModel, users: $viewModel.searchResults)
-      }.navigationBarTitle("Search Users")
-    }
+        UsersListView(users: viewModel.searchResults)
+      }
+      // .navigationBarTitle("Search Users")
+//    }
 //    .onAppear { search() }
   }
   
@@ -36,7 +36,8 @@ struct UsersSearchView: View {
 }
 
 struct UsersSearchView_Previews: PreviewProvider {
+  static let viewModel: ViewModel = ViewModel()
   static var previews: some View {
-    UsersSearchView(viewModel: ViewModel())
+    UsersSearchView().environmentObject(viewModel)
   }
 }

@@ -8,12 +8,23 @@
 
 import SwiftUI
 import MapKit
+import MessageUI
 
 struct AppView: View {
   @ObservedObject var viewModel: ViewModel = ViewModel()
+  init() {
+    // for changing the color of the tabbar 
+    //    UITabBar.appearance().isTranslucent = false
+    //    UITabBar.appearance().backgroundColor = UIColor(named: "tabBarIconColor")
+    //    UITabBar.appearance().barTintColor = UIColor(named: "tabBarIconColor")
+  }
   
   var body: some View {
-    pageContent().onAppear(perform: viewModel.tryLogin)
+    pageContent()
+      .fullScreenCover(isPresented: $viewModel.showingCover, onDismiss: viewModel.dismissCover, content: coverContent)
+      .sheet(isPresented: $viewModel.showingSheet, onDismiss: viewModel.dismissSheet, content: sheetContent)
+      .onAppear(perform: viewModel.tryLogin)
+      .environmentObject(viewModel)
   }
 }
 
@@ -27,57 +38,81 @@ extension AppView {
   @ViewBuilder func pageContent() -> some View {
     switch viewModel.currentScreen {
     case .app:
-      GeometryReader { geometry in
-        VStack {
-          tabContent()
-          if !viewModel.settingLocation {
-            TabBarView(viewModel: viewModel, geometry: geometry)
-          }
-        }
-      }
-      .edgesIgnoringSafeArea(.bottom)
-      .sheet(isPresented: $viewModel.showingSheet, onDismiss: viewModel.dismiss, content: sheetContent)
+      TabBarView().alert(isPresented: $viewModel.showAlert) { viewModel.alert! }
+        .edgesIgnoringSafeArea(.bottom)
     case .loginSplash:
       SplashView()
     case .createUser:
-      CreateUserView(viewModel: self.viewModel)
+      CreateUserView()
     case .login:
-      LoginView(viewModel: self.viewModel)
+      LoginView()
     case .landing:
-      LandingView(viewModel: self.viewModel) // .onAppear { self.viewModel.login(username: "jigims", password: "secret") }
+      LandingView()
+    case .sendingMessage:
+      MessageUIView(recipients: viewModel.contact, game: viewModel.game, completion: handleCompletion(_:))
     }
   }
   
   @ViewBuilder func tabContent() -> some View {
     switch viewModel.currentTab {
     case .home:
-      HomeView(viewModel: viewModel, settingLocation: $viewModel.settingLocation, selectedLocation: $viewModel.selectedLocation)
+      HomeView(settingLocation: $viewModel.settingLocation, selectedLocation: $viewModel.selectedLocation)
     case .profile:
-      ProfileView(viewModel: viewModel, favorites: viewModel.favorites)
+      ProfileView()
     case .invites:
-      InvitedGamesList(viewModel: viewModel)
+      InvitedGamesList()
     }
   }
   
   @ViewBuilder func sheetContent() -> some View {
-    switch viewModel.activeSheet {
-    case .creatingGame:
-      CreateView(viewModel: viewModel)
-    case .showingDetails:
-      NavigationView {
-        GameDetailsView(viewModel: self.viewModel, player: $viewModel.player, game: $viewModel.game)
-          .navigationBarTitle("")
-          .navigationBarHidden(true)
-      }
-    case .selectingLocation:
-      if let pl = Helper.CLtoMK(placemark: viewModel.selectedLocation) {
-        NavigationView {
-          CreateFormView(viewModel: viewModel, location: MKMapItem(placemark: pl))
+    NavigationView {
+      switch viewModel.activeSheet {
+      case .creatingGame:
+        CreateView()
+      case .showingDetails:
+        GameDetailsView(viewModel: viewModel, player: $viewModel.player, game: $viewModel.game)
+      case .selectingLocation:
+        if let pl = Helper.CLtoMK(placemark: viewModel.selectedLocation) {
+          CreateFormView(location: MKMapItem(placemark: pl))
         }
+      case .searchingUsers:
+        UsersSearchView()
+      case .gameInvites:
+        InvitedGamesList()
+      case .discoveringFriends:
+        DiscoverFriendsView()
+      case .sendingMessage:
+        MessageUIView(recipients: viewModel.contact, game: viewModel.game, completion: handleCompletion(_:))
+      case .sharingGame:
+        ShareSheetView(activityItems: ["Share this game"])
       }
-    case .searchingUsers:
-      UsersSearchView(viewModel: viewModel)
     }
+  }
+  
+  @ViewBuilder func coverContent() -> some View {
+    switch viewModel.activeCover {
+    case .addingFriends:
+      Text("Hello World")
+    case .showingFriends:
+      Text("Hello World")
+    case .editingProfile:
+      ModalView(title: "My Profile") {
+        EditProfileForm().alert(isPresented: $viewModel.showAlert) { viewModel.alert! }
+      }
+    }
+  }
+}
+
+func handleCompletion(_ result: MessageComposeResult) {
+  switch result {
+  case .cancelled:
+    break
+  case .sent:
+    break
+  case .failed:
+    break
+  default:
+    break
   }
 }
 

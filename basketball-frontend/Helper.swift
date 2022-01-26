@@ -66,15 +66,22 @@ class Helper {
   }
   
   static func toAcceptableDate(date: Date) -> String {
-    print(date)
     let dateFormatter = DateFormatter()
-//    dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
-//    dateFormatter.calendar = Calendar.current
-//    dateFormatter.timeZone = TimeZone.current
     dateFormatter.timeZone = TimeZone(abbreviation: "EST")
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-//    let t = dateFormatter.string(from: date)
     return dateFormatter.string(from: date)
+  }
+  
+  static func weekday(date: String) -> String {
+    let calendar = Calendar.current
+    let dateC = self.toDate(date: date)
+    if calendar.isDateInToday(dateC) {
+      return "Today"
+    } else {
+      let dateFormatter = DateFormatter()
+      dateFormatter.dateFormat = "EEEE"
+      return dateFormatter.string(from: dateC).capitalizingFirstLetter()
+    }
   }
   
   // Credit to Robert Chen, thorntech.com
@@ -174,4 +181,14 @@ class Helper {
     return mk
   }
   
+}
+
+extension String {
+  func capitalizingFirstLetter() -> String {
+    return prefix(1).capitalized + dropFirst()
+  }
+  
+  mutating func capitalizeFirstLetter() {
+    self = self.capitalizingFirstLetter()
+  }
 }

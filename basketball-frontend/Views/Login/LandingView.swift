@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 struct LandingView: View {
-  @ObservedObject var viewModel: ViewModel
+  @EnvironmentObject var viewModel: ViewModel
   var CR: CGFloat = 20
   
   var body: some View {
@@ -18,11 +18,11 @@ struct LandingView: View {
       VStack {
         Spacer()
         Image("logo")
-				Text("GotNext")
-					.font(.largeTitle)
-					.foregroundColor(Color("tabBarColor"))
+        Text("GotNext")
+          .font(.largeTitle)
+          .foregroundColor(Color("tabBarColor"))
         Spacer()
-        NavigationLink(destination: LoginView(viewModel: viewModel)) {
+        NavigationLink(destination: LoginView()) {
           Text("Log In")
             .padding()
             .frame(maxWidth: .infinity)
@@ -32,7 +32,7 @@ struct LandingView: View {
             .padding([.trailing, .leading])
         }
         
-        NavigationLink(destination: CreateUserView(viewModel: viewModel)) {
+        NavigationLink(destination: CreateUserView()) {
           Text("Create Account")
             .padding()
             .frame(maxWidth: .infinity)
@@ -47,7 +47,8 @@ struct LandingView: View {
 }
 
 struct LandingView_Previews: PreviewProvider {
+  static let viewModel: ViewModel = ViewModel()
   static var previews: some View {
-    LandingView(viewModel: ViewModel())
+    LandingView().environmentObject(viewModel)
   }
 }

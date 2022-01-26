@@ -15,7 +15,7 @@ import MapKit
 
 struct Request<T> {
   let method: HTTPMethod
-  let params: [String: Any]
+  let params: Parameters
   let exten: String
   let success: ((AFDataResponse<T>) -> ())
   let failure: ((AFDataResponse<T>) -> ())
@@ -25,9 +25,9 @@ class ViewModel: ObservableObject {
   
   let appDelegate: AppDelegate = AppDelegate()
   
-  // List of all games
+  // list of all games
   @Published var games: [Games] = [Games]()
-  // Games converted to class, allowing them to become map markers
+  // games converted to class, allowing them to become map markers
   @Published var gameAnnotations: [GameAnnotation] = [GameAnnotation]()
   
   @Published var user: User?
@@ -35,12 +35,16 @@ class ViewModel: ObservableObject {
   @Published var groupedPlayers: [Dictionary<String, [Player]>.Element] = [Dictionary<String, [Player]>.Element]()
   // Set of games associated with the players of the user
   @Published var playersSet: Set<Int> = Set()
-  @Published var favorites: [Favorite] = [Favorite]()
+//  @Published var favorites: [Favorite] = [Favorite]()
+  @Published var favorites: [Users] = [Users]()
+  // set of user identifications who are favorited by the current user
   @Published var favoritesSet: Set<Int> = Set()
   @Published var userId: Int?
   var headers: HTTPHeaders?
   
-  @Published var game: Game?
+  @Published var sharingContent: Bool = false
+  
+  @Published var game: Game = Game(id: -1, name: "Generic Game", date: "2021-05-15", time: "2000-01-01 14:50:19", description: "", priv: true, longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [APIData<Users>](), maybe: [APIData<Users>](), going: [APIData<Users>]())
   @Published var player: Player?
   @Published var invited: [Users] = [Users]()
   @Published var maybe: [Users] = [Users]()
@@ -52,16 +56,28 @@ class ViewModel: ObservableObject {
   @Published var currentScreen: Page = Page.landing
   @Published var currentTab: Tab = Tab.home
   @Published var searchResults: [Users] = [Users]()
+  
+  // contacts of the user who are also on the app but have not yet been favorited
+  @Published var potentials: [Users] = [Users]()
+  // contacts of the user 
+  @Published var contactPotentials: [Contact] = [Contact]()
+  
   @Published var isLoaded: Bool = false
   @Published var alert: Alert?
   @Published var showAlert: Bool = false
+  
   @Published var activeSheet: Sheet = .creatingGame
   @Published var showingSheet: Bool = false
+  
+  @Published var activeCover: Cover = .addingFriends
+  @Published var showingCover: Bool = false
+  
   @Published var settingLocation: Bool = false
   @Published var selectedLocation: CLPlacemark? = nil
   
   @Published var contacts: [Contact] = [Contact]()
   @Published var contactsFiltered: [Contact] = [Contact]()
+  @Published var contact: Contact?
   
   var secureStoreWithGenericPwd: SecureStore!
   
@@ -80,34 +96,37 @@ class ViewModel: ObservableObject {
   }
   
   func sendData() {
-    let success: (AFDataResponse<APIData<User>>) -> () = { (value) in
-      if let _: APIData<User> = value.value {
-        print("Success")
-      }}
-    let failure: (AFDataResponse<APIData<User>>) -> () = { (value) in
-    }
-    let data = self.contacts.map({ $0.asDictionary() })
-    let params: [String : Any] = [
-      "data": data
-    ]
-    AF.request(URL + "/users", method: .post, parameters: params, encoding: JSONEncoding.default, headers: self.headers!)
-      .validate()
-      .responseDecodable {
-        ( response: AFDataResponse<APIData<User>>) in
-        switch response.result {
-        case .success:
-          success(response)
-        case .failure:
-          failure(response)
-        }
-      }
+    self.inviteContact(contact: contacts.first!)
+    //    let success: (AFDataResponse<APIData<User>>) -> () = { (value) in
+    //      if let _: APIData<User> = value.value {
+    //        print("Success")
+    //      }}
+    //    let failure: (AFDataResponse<APIData<User>>) -> () = { (value) in
+    //    }
+    //    let data = self.contacts.map({ $0.asDictionary() })
+    //    let params: [String : Any] = [
+    //      "user": self.user!.id,
+    //      "data": data
+    //    ]
+    //    print(data)
+    //    AF.request(URL + CONTACTS, method: .post, parameters: params, encoding: JSONEncoding.default, headers: self.headers!)
+    //      .validate()
+    //      .responseDecodable {
+    //        ( response: AFDataResponse<APIData<User>>) in
+    //        switch response.result {
+    //        case .success:
+    //          success(response)
+    //        case .failure:
+    //          failure(response)
+    //        }
+    //      }
   }
   
   //
   // USER FUNCTIONS
   //
   
-  //  checks to see if prior credentials were stored in the keychain
+  // checks to see if prior credentials were stored in the keychain
   func tryLogin() {
     let genericPwdQueryable = GenericPasswordQueryable(service: "MyService")
     secureStoreWithGenericPwd = SecureStore(secureStoreQueryable: genericPwdQueryable)
@@ -169,6 +188,14 @@ class ViewModel: ObservableObject {
       }
   }
   
+  func tryLogout() {
+    self.alert = Alert(title: Text("Sign out?"),
+                       message: Text("You can always access your content by signing back in"),
+                       primaryButton: .cancel({ self.showAlert = false }),
+                       secondaryButton: .destructive(Text("Sign Out"), action: { self.logout() }))
+    self.showAlert = true
+  }
+  
   //  perform logout for a user by clearing all stored variables in ViewModel
   //  :param none
   //  :return none
@@ -183,11 +210,11 @@ class ViewModel: ObservableObject {
     self.user = nil
     self.players = [Player]()
     self.playersSet = Set()
-    self.favorites = [Favorite]()
+//    self.favorites = [Favorite]()
     self.favoritesSet = Set()
     self.userId = nil
     self.headers = nil
-    self.game = nil
+//    self.game = nil
     self.invited = [Users]()
     self.maybe = [Users]()
     self.going = [Users]()
@@ -206,13 +233,19 @@ class ViewModel: ObservableObject {
   func refreshCurrentUser() {
     let request = URL + "/users/" + String(self.userId!)
     AF.request(request, headers: self.headers!).responseDecodable { ( response: AFDataResponse<APIData<User>> ) in
+      print(response)
       if let value: APIData<User> = response.value {
         self.user = value.data
+        print(self.user!)
         self.players = value.data.players.map { $0.data }
         self.groupedPlayers = self.groupPlayers(players: self.players)
         self.playersSet = Set(self.players.map { $0.game.data.id })
-        self.favorites = value.data.favorites.map { $0.data }
-        self.favoritesSet = Set(self.favorites.map { $0.user.data.id })
+        let favs = value.data.favorites.map { $0.data }
+        self.favorites = favs.map { fav in Users(id: fav.favoritee_id, username: fav.user.data.username, email: fav.user.data.email, firstName: fav.user.data.firstName, lastName: fav.user.data.lastName, dob: fav.user.data.dob, phone: fav.user.data.phone, favorite: fav.id)}
+        self.favoritesSet = Set(favs.map { $0.user.data.id })
+        
+        self.potentials = value.data.potentials.map { $0.data } .filter { $0.favorite == -1 }
+        self.contactPotentials = value.data.contacts.map { $0.data }
       }
     }
   }
@@ -250,7 +283,17 @@ class ViewModel: ObservableObject {
       self.showAlert = true
     }
     let req: Request = Request(method: .post, params: params, exten: CREATE_USER, success: success, failure: failure)
-    request(req: req)
+    AF.request(URL + req.exten, method: req.method, parameters: req.params)
+      .validate()
+      .responseDecodable {
+        ( response: AFDataResponse<APIData<User>>) in
+        switch response.result {
+        case .success:
+          req.success(response)
+        case .failure:
+          req.failure(response)
+        }
+      }
   }
   
   //  edit the current user
@@ -279,11 +322,12 @@ class ViewModel: ObservableObject {
       if let value: APIData<User> = value.value {
         self.user = value.data
         self.refreshCurrentUser()
+        self.showingCover.toggle()
       }}
     let failure: (AFDataResponse<APIData<User>>) -> () = { (value) in print(value)
       self.alert = self.createAlert(title: "Invalid Profile Information",
                                     message: "The edited profile information you entered was invalid, please check your inputs and try again",
-                                    button: "Try again")
+                                    button: "Close")
       self.showAlert = true
     }
     let req: Request = Request(method: .patch, params: params as [String : Any], exten: USERS+"/"+String(identification), success: success, failure: failure)
@@ -294,7 +338,6 @@ class ViewModel: ObservableObject {
     self.currentTab = Tab.home
     self.showingSheet = false
     self.settingLocation = true
-    print(self.settingLocation)
   }
   
   //
@@ -305,6 +348,7 @@ class ViewModel: ObservableObject {
   //  :param none
   //  :return none
   func getGames() {
+    print("GET GAMES")
     let params: Parameters = [
       "user_id": self.userId!
     ]
@@ -312,6 +356,8 @@ class ViewModel: ObservableObject {
       if let value: ListData<Games> = value.value {
         self.games = value.data
         self.gameAnnotations = value.data.map({ GameAnnotation(id: $0.id, subtitle: $0.name, title: $0.name, latitude: $0.latitude, longitude: $0.longitude)})
+        print("Annotations")
+        print(self.gameAnnotations)
       }}
     let failure: (AFDataResponse<ListData<Games>>) -> () = { (value) in }
     let req: Request = Request(method: .get, params: params, exten: GET_GAMES, success: success, failure: failure)
@@ -376,13 +422,13 @@ class ViewModel: ObservableObject {
         self.showingSheet = false
         self.game = value.data
         self.createPlayer(status: "going", userId: self.user!.id, gameId: value.data.id)
-        if let newGame = self.game {
-          let newGame = Games(id: newGame.id, name: newGame.name, date: newGame.date, time: newGame.time, description: newGame.description, priv: newGame.priv, longitude: newGame.longitude, latitude: newGame.latitude)
+//        if let newGame = self.game {
+        let newGame = Games(id: self.game.id, name: self.game.name, date: self.game.date, time: self.game.time, desc: self.game.description, priv: self.game.priv, longitude: self.game.longitude, latitude: self.game.latitude)
           self.games.append(newGame)
           let gameAnnotation = GameAnnotation(id: newGame.id, subtitle: newGame.name, title: newGame.name, latitude: newGame.latitude, longitude: newGame.longitude)
           self.gameAnnotations.append(gameAnnotation)
           self.cancelSelectingLocation()
-        }
+//        }
       }
       self.activeSheet = .showingDetails
       self.showingSheet = true
@@ -390,22 +436,8 @@ class ViewModel: ObservableObject {
     let failure: (AFDataResponse<APIData<Game>>) -> () = { (value) in
       self.alert = Alert(title: Text("Create Game Failed"),
                          message: Text("Failed to create this game, please try again"),
-                         primaryButton: .default(
-                          Text("Try Again"),
-                          action: {
-                            self.createGame(name: name, date: date, description: description, priv: priv, latitude: latitude, longitude: longitude)
-                          }
-                         ),
-                         secondaryButton: .default(
-                          Text("Close"),
-                          action: {
-                            self.showAlert = false
-                            self.alert = nil
-                          }
-                         )
-      )
-      self.showAlert = true
-    }
+                         dismissButton: .default(Text("Close"), action: { self.showAlert = false }))
+      self.showAlert = true }
     let req: Request = Request(method: .post, params: params, exten: GAMES, success: success, failure: failure)
     request(req: req)
   }
@@ -413,6 +445,11 @@ class ViewModel: ObservableObject {
   //
   // SHEET FUNCTIONS
   //
+  
+  func shareGame() -> () {
+    self.activeSheet = .sharingGame
+    self.showingSheet = true
+  }
   
   func startCreating() -> () {
     self.showingSheet = true
@@ -429,6 +466,11 @@ class ViewModel: ObservableObject {
     self.activeSheet = .searchingUsers
   }
   
+  func discoveringFriends() -> () {
+    self.showingSheet = true
+    self.activeSheet = .discoveringFriends
+  }
+  
   func selectingLocation() -> () {
     self.showingSheet = true
     self.activeSheet = .selectingLocation
@@ -438,12 +480,41 @@ class ViewModel: ObservableObject {
     self.settingLocation = false
   }
   
+  func showGame(game: Game, player: Player) -> () {
+    self.showDetails()
+    self.game = player.game.data
+    self.player = player
+    self.getGame(id: player.game.data.id)
+  }
+  
+  // invites a user from the user's contacts to the game
+  // :param contact (Contact) - the contact who is being invited
+  // :return none
+  func inviteContact(contact: Contact) -> () {
+    self.contact = contact
+    self.activeSheet = .sendingMessage
+    self.showingSheet = true
+  }
+  
   // called when the sheet is dismissed
-  func dismiss() -> () {
+  func dismissSheet() -> () {
     switch self.activeSheet {
     default:
       return
     }
+  }
+  
+  // called when the cover is dismissed
+  func dismissCover() -> () {
+    switch self.activeCover {
+    default:
+      return
+    }
+  }
+  
+  func editProfile() -> () {
+    self.activeCover = .editingProfile
+    self.showingCover = true
   }
   
   //
@@ -453,34 +524,23 @@ class ViewModel: ObservableObject {
   //  favorite another user and refresh the user info
   //  :param favoriterId (Int) - user ID of the favoriter
   //  :param favoriteeId (Int) - user ID of the favoritee
-  //  :return (Favorite?) the result Favorite object if successful, nil otherwise
-  func favorite(favoriterId: Int, favoriteeId: Int) -> () {
+  //  :return Void
+  func favorite(favoritee: Users) -> () {
     let params = [
-      "favoriter_id": favoriterId,
-      "favoritee_id": favoriteeId
+      "favoriter_id": self.user!.id,
+      "favoritee_id": favoritee.id
     ]
-    
     let success: (AFDataResponse<APIData<Favorite>>) -> () = { (value) in
-      if let _: APIData<Favorite> = value.value {
-        self.refreshCurrentUser()
+      if let favorite: APIData<Favorite> = value.value {
+        // add favorite object identification to favoritee user
+        favoritee.favorite = favorite.data.id
+        // add user to the list of favorites
+        self.favorites.append(favoritee)
       }}
     let failure: (AFDataResponse<APIData<Favorite>>) -> () = { (value) in
       self.alert = Alert(title: Text("Favorite Failed"),
                          message: Text("Failed to favorite this user, please try again"),
-                         primaryButton: .default(
-                          Text("Try Again"),
-                          action: {
-                            self.favorite(favoriterId: favoriterId, favoriteeId: favoriteeId)
-                          }
-                         ),
-                         secondaryButton: .default(
-                          Text("Close"),
-                          action: {
-                            self.showAlert = false
-                            self.alert = nil
-                          }
-                         )
-      )
+                         dismissButton: .default(Text("Close"), action: { self.showAlert = false }))
       self.showAlert = true
     }
     let req: Request = Request(method: .post, params: params, exten: FAVORITES, success: success, failure: failure)
@@ -490,55 +550,45 @@ class ViewModel: ObservableObject {
   //  check if a user is favorited by the current user
   //  :param userId (Int) - a user ID of the potential favoritee
   //  :return (Bool) true if userId is a favorite of the current user, false otherwise
-  func isFavorite(userId: Int) -> Bool {
-    for favorite in self.favorites {
-      if (favorite.favoritee_id == userId) {
-        return true
-      }
-    }
-    return false
-  }
+//  func isFavorite(userId: Int) -> Bool {
+//    for favorite in self.favorites {
+//      if (favorite.favoritee_id == userId) {
+//        return true
+//      }
+//    }
+//    return false
+//  }
   
   //  find a favorite object in self.favorites given favoriter and favoritee
   //  :param favoriterId (Int) - user ID of the favoriter
   //  :param favoriteeId (Int) - user ID of the favoritee
   //  :return (Favorite?) a Favorite object if a match is found, nil otherwise
-  func findFavorite(favoriterId: Int, favoriteeId: Int) -> Favorite? {
-    for favorite in self.favorites {
-      if (favorite.favoriter_id == favoriterId && favorite.favoritee_id == favoriteeId) {
-        return favorite
-      }
-    }
-    return nil
-  }
+//  func findFavorite(favoriterId: Int, favoriteeId: Int) -> Favorite? {
+//    for favorite in self.favorites {
+//      if (favorite.favoriter_id == favoriterId && favorite.favoritee_id == favoriteeId) {
+//        return favorite
+//      }
+//    }
+//    return nil
+//  }
   
   // unfavorite another user
   // :param favoriteeId (Int) - user ID of the user being unfavorited
   // :return none
-  func unfavorite(favoriteeId: Int) {
-    let id = self.favorites.filter({ $0.favoritee_id == favoriteeId })[0].id
+  func unfavorite(user: Users) {
+//    let id = self.favorites.filter({ $0.favoritee_id == favoriteeId })[0].id
+    let id = user.favorite
     let params: [String : Any] = [:]
     let success: (AFDataResponse<APIData<Favorite>>) -> () = { (value) in
       if let _: APIData<Favorite> = value.value {
-        self.refreshCurrentUser()
+//        self.refreshCurrentUser()
+        user.favorite = -1
+        self.favorites = self.favorites.filter { fav in fav.id != user.id }
       }}
     let failure: (AFDataResponse<APIData<Favorite>>) -> () = { (value) in
       self.alert = Alert(title: Text("Unfavorite Failed"),
                          message: Text("Failed to unfavorite this user, please try again"),
-                         primaryButton: .default(
-                          Text("Try Again"),
-                          action: {
-                            self.unfavorite(favoriteeId: favoriteeId)
-                          }
-                         ),
-                         secondaryButton: .default(
-                          Text("Close"),
-                          action: {
-                            self.showAlert = false
-                            self.alert = nil
-                          }
-                         )
-      )
+                         dismissButton: .default(Text("Close"), action: { self.showAlert = false }))
       self.showAlert = true
     }
     let req: Request = Request(method: .delete, params: params, exten: FAVORITES+"/"+String(id), success: success, failure: failure)
@@ -561,7 +611,7 @@ class ViewModel: ObservableObject {
     ]
     let success: (AFDataResponse<APIData<Player>>) -> () = { (value) in
       if let value: APIData<Player> = value.value {
-        self.getGame(id: self.game!.id)
+        self.getGame(id: self.game.id)
         self.players.insert(value.data, at: 0)
         self.player = value.data
         
@@ -601,7 +651,7 @@ class ViewModel: ObservableObject {
     ]
     let success: (AFDataResponse<APIData<Player>>) -> () = { (value) in
       if let value: APIData<Player> = value.value {
-        self.getGame(id: self.game!.id)
+        self.getGame(id: self.game.id)
         self.players.insert(value.data, at: 0)
       }}
     let failure: (AFDataResponse<APIData<Player>>) -> () = { (value) in
@@ -650,7 +700,7 @@ class ViewModel: ObservableObject {
     ]
     let success: (AFDataResponse<APIData<Player>>) -> () = { (value) in
       if let value: APIData<Player> = value.value {
-        self.getGame(id: self.game!.id)
+        self.getGame(id: self.game.id)
         self.refreshCurrentUser()
         self.player = value.data
       }}
@@ -680,7 +730,7 @@ class ViewModel: ObservableObject {
   //  get all players of a specific status
   //  :param status (String) - status of a player, can be "going", "maybe", "invited", or "not_going"
   //  :return ([Player]) - an array of Player objects with the specified status
-  func getPlayerWithStatus(status: String) -> [Player] {
+  func getPlayerWithStatus(status: Status) -> [Player] {
     var filteredResults: [Player] = [Player]()
     
     for player in self.players {
@@ -695,31 +745,31 @@ class ViewModel: ObservableObject {
   // MISC. FUNCTIONS
   //
   
-  func fetchData() {
-    login(username: "jxu", password: "secret")
-  }
+  //  func fetchData() {
+  //    login(username: "jxu", password: "secret")
+  //  }
   
   // map a boolean to a list of users representing if they are favorited or not
   // :param users ([Users]) - list of the users
   // :return ([(User, Bool)]) - list of users with a tag for if they are favorited or not
-  func forStatus(users: [Users]) -> [(user: Users, favorited: Bool)] {
-    return users.map({ (user: $0, favorited: self.favoritesSet.contains($0.id)) }).sorted {
-      switch ($0.favorited, $1.favorited) {
-      case (true, _):
-        return true
-      case (_, true):
-        return false
-      default:
-        return true
-      }
-    }
-  }
+  //  func forStatus(users: [Users]) -> [(user: Users, favorited: Bool)] {
+  //    return users.map({ (user: $0, favorited: self.favoritesSet.contains($0.id)) }).sorted {
+  //      switch ($0.favorited, $1.favorited) {
+  //      case (true, _):
+  //        return true
+  //      case (_, true):
+  //        return false
+  //      default:
+  //        return true
+  //      }
+  //    }
+  //  }
   
   // map a boolean to the list of favorites representing if they are invited or not
   // :return ([(Favorite, Bool)]) - list of users with a tag for if they are invited or not
-  func favoritesNotInvited() -> [(favorite: Favorite, invited: Bool)] {
-    return self.favorites.map({ (favorite: $0, invited: self.gamePlayers.contains($0.user.data.id)) })
-  }
+//  func favoritesNotInvited() -> [(favorite: Favorite, invited: Bool)] {
+//    return self.favorites.map({ (favorite: $0, invited: self.gamePlayers.contains($0.user.data.id)) })
+//  }
   
   // search the database for users
   // :param query (String) - query to send to the database
@@ -728,12 +778,14 @@ class ViewModel: ObservableObject {
     let params = [
       "query": query.lowercased()
     ]
-    let request  = "http://secure-hollows-77457.herokuapp.com/search"
-    AF.request(request, method: .get, parameters: params).responseDecodable { ( response: AFDataResponse<ListData<Users>> ) in
-      if let value: ListData<Users> = response.value {
+    let success: (AFDataResponse<ListData<Users>>) -> () = { (value) in
+      if let value: ListData<Users> = value.value {
         self.searchResults = value.data
       }
     }
+    let failure: (AFDataResponse<ListData<Users>>) -> () = { (value) in }
+    let req: Request = Request(method: .get, params: params, exten: SEARCH, success: success, failure: failure)
+    request(req: req)
   }
   
   //  create an authorization header used in API requests
@@ -782,13 +834,6 @@ class ViewModel: ObservableObject {
     catch {
       NSLog("[Contacts] ERROR: was unable to parse contacts")
     }
-  }
-  
-  // invites a user from the user's contacts to the game
-  // :param contact (Contact) - the contact who is being invited
-  // :return none
-  func inviteContact(contact: Contact) {
-    return
   }
   
   // filters the contacts based on a query

@@ -10,7 +10,7 @@ import SwiftUI
 import MessageUI
 
 struct InvitingContactsView: View {
-  @ObservedObject var viewModel: ViewModel
+  @EnvironmentObject var viewModel: ViewModel
   @State var contactSearch: String = ""
   
   var body: some View {
@@ -24,7 +24,7 @@ struct InvitingContactsView: View {
     )
     VStack {
       SearchBarView<Contact>(searchText: usSearch)
-      ContactsListView(viewModel: viewModel, contacts: $viewModel.contactsFiltered)
+      ContactsListView(contacts: $viewModel.contactsFiltered)
     }
     .navigationBarTitle("Invite Contacts")
     .onAppear { search() }
@@ -36,19 +36,19 @@ struct InvitingContactsView: View {
 }
 
 struct ContactsListView: View {
-  @ObservedObject var viewModel: ViewModel
+  @EnvironmentObject var viewModel: ViewModel
   @Binding var contacts: [Contact]
   var body: some View {
     List {
       ForEach(contacts) { contact in
-        ContactRowView(viewModel: viewModel, contact: contact, invited: false)
+        ContactRowView(contact: contact, invited: false)
       }
     }
   }
 }
 
 struct ContactRowView: View {
-  @ObservedObject var viewModel: ViewModel
+  @EnvironmentObject var viewModel: ViewModel
   let contact: Contact
   @State var invited: Bool
   private let messageComposeDelegate = MessageDelegate()
@@ -60,7 +60,7 @@ struct ContactRowView: View {
       Text(contact.name())
       Spacer()
       Button(action: {
-        self.presentMessageCompose()
+        self.inviteContact()
       }) {
         Text(invited ? "Invited" : "Invite")
           .padding()
@@ -75,7 +75,7 @@ struct ContactRowView: View {
   }
   func inviteContact() {
     viewModel.inviteContact(contact: contact)
-    invited = true
+//    invited = true
   }
 }
 
@@ -107,7 +107,7 @@ extension ContactRowView {
 
 struct InvitingContactsView_Previews: PreviewProvider {
   static var previews: some View {
-    InvitingContactsView(viewModel: ViewModel())
+    InvitingContactsView()
   }
 }
 

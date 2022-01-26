@@ -10,15 +10,15 @@ import SwiftUI
 import MapKit
 
 struct CreateFormView: View {
-  @ObservedObject var viewModel: ViewModel
+  @EnvironmentObject var viewModel: ViewModel
   let location: MKMapItem
-  @State var game: Games = Games(id: 4, name: "", date: "", time: "", description: "", priv: false, longitude: 2.0, latitude: 2.0)
+  @State var game: Games = Games(id: 4, name: "", date: "", time: "", desc: "", priv: false, longitude: 2.0, latitude: 2.0)
   @State var date: Date = Date()
   
   var body: some View {
     Form {
       Section(header: Text("GENERAL")) {
-        TextField("Court Name", text: $game.name)
+        TextField("Game Title", text: $game.name)
       }
       Section(header: Text("LOCATION")) {
         VStack(alignment: .leading) {
@@ -31,16 +31,18 @@ struct CreateFormView: View {
           Text("Private Game")
         }
         DatePicker("Date", selection: $date, in: Date()..., displayedComponents: [.date, .hourAndMinute])
-        TextField("Description", text: $game.description)
+        TextField("Description", text: $game.desc)
       }
       Section {
         Button(action: {
           createGame()
         }) {
-          Text("Create Game")
+          Text("Create Game").centeredContent()
         }
       }
-    }.navigationBarTitle("Game Details")
+    }
+    .navigationBarTitle("Game Details")
+    .navigationBarTitleDisplayMode(.inline)
     .alert(isPresented: $viewModel.showAlert) {
       viewModel.alert!
     }
@@ -52,7 +54,10 @@ struct CreateFormView: View {
 }
 
 struct CreateFormView_Previews: PreviewProvider {
+  static let viewModel: ViewModel = ViewModel()
   static var previews: some View {
-    CreateFormView(viewModel: ViewModel(), location: MKMapItem())
+    NavigationView {
+      CreateFormView(location: MKMapItem()).environmentObject(viewModel)
+    }
   }
 }

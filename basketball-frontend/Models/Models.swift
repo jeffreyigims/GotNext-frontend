@@ -7,8 +7,13 @@
 //
 
 import Foundation
+import MapKit
 
-struct Users: Decodable, Identifiable {
+let genericUser: Users = Users(id: 4, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", favorite: -1)
+let genericFavorite: Favorite = Favorite(id: 4, favoriter_id: 2, favoritee_id: 4, user: APIData<Users>(data: genericUser))
+let genericUsers: [Users] = Array(repeating: genericUser, count: 4)
+
+class Users: Codable, Identifiable {
   let id: Int
   let username: String
   let email: String
@@ -16,38 +21,72 @@ struct Users: Decodable, Identifiable {
   let lastName: String
   let dob: String
   let phone: String
+  var favorite: Int
   enum CodingKeys: String, CodingKey {
-    case id
-    case username
-    case email
+    case id, username, email, dob, phone, favorite
     case firstName = "firstname"
     case lastName = "lastname"
-    case dob
-    case phone
+  }
+  init(id: Int, username: String, email: String, firstName: String, lastName: String, dob: String, phone: String, favorite: Int) {
+    self.id = id
+    self.username = username
+    self.email = email
+    self.firstName = firstName
+    self.lastName = lastName
+    self.dob = dob
+    self.phone = phone
+    self.favorite = favorite
   }
   func displayName() -> String {
     return self.firstName + " " + self.lastName
   }
+  func isFavorite() -> Bool { self.favorite != -1 }
 }
 
-struct Games: Decodable, Encodable, Identifiable {
+class Games: NSObject, Codable, Identifiable, MKAnnotation {
   var id: Int
+  let title: String?
+  let subtitle: String?
+  let coordinate: CLLocationCoordinate2D
+  
   var name: String
   var date: String
   var time: String
-  var description: String
+  var desc: String
   var priv: Bool
   var longitude: Double
   var latitude: Double
   enum CodingKeys: String, CodingKey {
-    case id
-    case name
-    case date
-    case time
-    case description
+    case id, name, date, time, longitude, latitude
     case priv = "private"
-    case longitude
-    case latitude
+    case desc = "description"
+  }
+  init(id: Int, name: String, date: String, time: String, desc: String, priv: Bool, longitude: Double, latitude: Double) {
+    self.id = id
+    self.name = name
+    self.date = date
+    self.time = time
+    self.desc = desc
+    self.priv = priv
+    self.longitude = longitude
+    self.latitude = latitude
+    self.title = name
+    self.subtitle = name
+    self.coordinate = CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
+  }
+  required init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self.id = try container.decode(Int.self, forKey: .id)
+    self.name = try container.decode(String.self, forKey: .name)
+    self.date = try container.decode(String.self, forKey: .date)
+    self.time = try container.decode(String.self, forKey: .time)
+    self.desc = try container.decode(String.self, forKey: .desc)
+    self.priv = try container.decode(Bool.self, forKey: .priv)
+    self.longitude = try container.decode(Double.self, forKey: .longitude)
+    self.latitude = try container.decode(Double.self, forKey: .latitude)
+    self.title = self.name
+    self.subtitle = self.name
+    self.coordinate = CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
   }
   func onTime() -> String {
     return Helper.onTime(time: self.time)
@@ -57,9 +96,9 @@ struct Games: Decodable, Encodable, Identifiable {
   }
 }
 
-struct Player: Decodable, Identifiable {
+struct Player: Codable, Identifiable {
   let id: Int
-  let status: String
+  let status: Status
   let game: APIData<Game>
   enum CodingKeys: String, CodingKey {
     case id
@@ -68,7 +107,7 @@ struct Player: Decodable, Identifiable {
   }
 }
 
-struct Favorite: Decodable, Identifiable {
+struct Favorite: Codable, Identifiable {
   let id: Int
   let favoriter_id: Int
   let favoritee_id: Int
@@ -81,7 +120,7 @@ struct Favorite: Decodable, Identifiable {
   }
 }
 
-struct User: Decodable {
+struct User: Codable {
   let id: Int
   let username: String
   let email: String
@@ -91,23 +130,21 @@ struct User: Decodable {
   let phone: String
   let players: [APIData<Player>]
   let favorites: [APIData<Favorite>]
+  let potentials: [APIData<Users>]
+  let contacts: [APIData<Contact>]
+  let profilePicture: String?
   enum CodingKeys: String, CodingKey {
-    case id
-    case username
-    case email
+    case id, username, email, dob, phone, players, favorites, potentials, contacts
     case firstName = "firstname"
     case lastName = "lastname"
-    case dob
-    case phone
-    case players
-    case favorites
+    case profilePicture = "image"
   }
   func displayName() -> String {
     return self.firstName + " " + self.lastName
   }
 }
 
-struct Game: Decodable {
+struct Game: Codable {
   let id: Int
   let name: String
   let date: String
@@ -138,6 +175,13 @@ struct Game: Decodable {
   func onDate() -> String {
     return Helper.onDate(date: self.date)
   }
+  func privDisplay() -> String {
+    if self.priv {
+      return "- Private"
+    } else {
+      return "- Public"
+    }
+  }
 }
 
 struct UserLogin: Decodable {
@@ -151,7 +195,7 @@ struct UserLogin: Decodable {
   }
 }
 
-struct ListData<T>: Decodable where T: Decodable {
+struct ListData<T>: Codable where T: Codable {
   let data: [T]
   enum CodingKeys: String, CodingKey {
     case data
@@ -173,7 +217,7 @@ struct ListData<T>: Decodable where T: Decodable {
   }
 }
 
-struct APIData<T>: Decodable where T: Decodable {
+struct APIData<T>: Codable where T: Codable {
   var data: T
   enum CodingKeys: String, CodingKey {
     case data
@@ -192,6 +236,9 @@ struct APIData<T>: Decodable where T: Decodable {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     let results = try container.decode(DataGenericData.self, forKey: .data)
     self.data = results.attributes
+  }
+  init(data: T) {
+    self.data = data
   }
 }
 

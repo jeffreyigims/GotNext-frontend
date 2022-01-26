@@ -10,89 +10,73 @@ import Foundation
 import SwiftUI
 
 struct EditProfileForm: View {
-  @ObservedObject var viewModel: ViewModel
-  @State var username: String = ""
-  @State var firstName: String = ""
-  @State var lastName: String = ""
-  @State var email: String = ""
-  @State var phone: String = ""
+  @EnvironmentObject var viewModel: ViewModel
+  @State var username: String = "mjordan"
+  @State var firstName: String = "michael"
+  @State var lastName: String = "jordan"
+  @State var email: String = "mjordan@gmail.com"
+  @State var phone: String = "4123549286"
+  
+  func setProperties() -> () {
+    self.username = viewModel.user?.username ?? "mjordan"
+    self.firstName = viewModel.user?.firstName ?? "michael"
+    self.lastName = viewModel.user?.lastName ?? "jordan"
+    self.email = viewModel.user?.email ?? "mjordan@gmail.com"
+    self.phone = viewModel.user?.phone ?? "4123549286"
+  }
   
   var body: some View {
-    //    Text("Edit Your Information").font(.largeTitle).bold()
-    Image("default-profile")
-      .resizable()
-      .frame(width: 64.0, height: 64.0)
-      .scaledToFit()
-      .clipShape(Circle())
-      .overlay(
-        Circle()
-          .stroke(Color.white, lineWidth: 4)
-          .shadow(radius: 10)
-      )
-    Form {
-      Section(header: Text("GENERAL")) {
-        VStack {
-          HStack {
-            Text("Username:")
-              .fontWeight(.bold)
-//              .padding(.leading)
-            Text(self.username)
-//            TextField("Username", text: self.$username)
-//              .padding(.trailing)
-              .autocapitalization(.none)
-          }.padding()
-          
-          HStack {
-            Text("First Name:")
-              .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
-//              .padding(.leading)
-            TextField("First Name", text: self.$firstName)
-//              .padding(.trailing)
-          }.padding()
-          
-          HStack {
-            Text("Last Name:")
-              .fontWeight(.bold)
-//              .padding(.leading)
-            TextField("Last Name", text: self.$lastName)
-//              .padding(.trailing)
-          }.padding()
-          
-          HStack {
-            Text("Email:")
-              .fontWeight(.bold)
-//              .padding(.leading)
-            TextField("Email", text: self.$email)
-//              .padding(.trailing)
-              .autocapitalization(.none)
-          }.padding()
-          
-          HStack {
-            Text("Phone:")
-              .fontWeight(.bold)
-//              .padding(.leading)
-            TextField("Phone", text: self.$phone)
-//              .padding(.trailing)
-          }.padding()
+    GeometryReader { geometry in
+      VStack {
+        Image(systemName: "person.crop.circle")
+          .resizable()
+          .frame(width: geometry.size.width/2.5, height: geometry.size.width/2.5)
+          .scaledToFit()
+          .clipShape(Circle())
+          .overlay(
+            Circle()
+              .stroke(Color.white, lineWidth: 4)
+              .shadow(radius: 10)
+          )
+        Text(self.username).foregroundColor(Color(UIColor.darkGray))
+        Form {
+          Section(header: Text("PERSONAL")) {
+            TextField("first name", text: $firstName)
+            TextField("last name", text: self.$lastName)
+          }
+          Section(header: Text("CONTACT")) {
+            TextField("email", text: self.$email)
+            TextField("phone", text: self.$phone)
+          }
+          Section {
+            Button(action: self.editCurrentUser) {
+              Text("Save Information").centeredContent()
+            }
+          }
         }
       }
-      
-      Section {
-        Button(action: {
-          self.viewModel.editCurrentUser(firstName: self.firstName, lastName: self.lastName, username: self.username, email: self.email, phone: self.phone)
-        }) {
-          Text("Save")
-        }
-      }
-    }.navigationBarTitle("Edit User Information")
-    .alert(isPresented: $viewModel.showAlert) {
-      viewModel.alert!
     }
+    .toolbar {
+      ToolbarItem(placement: .principal) {
+        Text("My Profile")
+      }
+    }
+    .background(Color(UIColor.secondarySystemBackground))
+    .onAppear(perform: self.setProperties)
+  }
+  
+  func editCurrentUser() -> () {
+    self.viewModel.editCurrentUser(firstName: self.firstName, lastName: self.lastName, username: self.username, email: self.email, phone: self.phone)
   }
 }
 
 struct EditProfileForm_Previews: PreviewProvider {
+  //  static let user: User = User(id: 4, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", players: [APIData<Player>](), favorites: [APIData<Favorite>](), potentials: [APIData<Users>](), contacts: [APIData<Contact>]())
+  static var viewModel: ViewModel = ViewModel()
   static var previews: some View {
-    EditProfileForm(viewModel: ViewModel())
+    NavigationView {
+      EditProfileForm()
+    }.environmentObject(viewModel)
   }
 }
+

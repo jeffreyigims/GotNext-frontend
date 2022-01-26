@@ -8,14 +8,13 @@
 
 import SwiftUI
 
-struct TabBarView: View {
-  @ObservedObject var viewModel: ViewModel
+struct TabBarOldView: View {
+  @EnvironmentObject var viewModel: ViewModel
   var geometry: GeometryProxy
-
   
   var body: some View {
     HStack{
-      //Home Icon
+      // home Icon
       Image(systemName: "house")
         .resizable()
         .aspectRatio(contentMode: .fit)
@@ -28,7 +27,7 @@ struct TabBarView: View {
         }
       
       ZStack{
-        //Plus Icon
+        // plus Icon
         Circle()
           .foregroundColor(Color("tabBarColor"))
           .frame(width:75, height:75)
@@ -44,7 +43,7 @@ struct TabBarView: View {
             viewModel.startCreating()
           }
       }
-      //Profile Icon
+      // profile Icon
       Image(systemName: "person")
         .resizable()
         .aspectRatio(contentMode: .fit)
@@ -60,8 +59,24 @@ struct TabBarView: View {
   }
 }
 
-//struct TabBarView_Previews: PreviewProvider {
-//  static var previews: some View {
-//    TabBarView(viewModel: ViewModel(), geometry: GeometryProxy)
-//  }
-//}
+struct TabBarView: View {
+  @EnvironmentObject var viewModel: ViewModel
+  
+  var body: some View {
+    TabView {
+      HomeView(settingLocation: $viewModel.settingLocation, selectedLocation: $viewModel.selectedLocation)
+        .tabItem({ Label("Home", systemImage: homeIcon) }).tag(0)
+      NavigationView {
+        ProfileView().background(Color(UIColor.secondarySystemBackground))
+      }
+      .tabItem({ Label("Profile", systemImage: profileIcon) }).tag(1)
+    }
+  }
+}
+
+struct TabBarView_Previews: PreviewProvider {
+  static var viewModel: ViewModel = ViewModel()
+  static var previews: some View {
+    TabBarView().environmentObject(viewModel)
+  }
+}

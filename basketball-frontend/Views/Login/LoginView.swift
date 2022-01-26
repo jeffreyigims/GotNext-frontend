@@ -10,30 +10,30 @@ import Foundation
 import SwiftUI
 
 struct LoginView: View {
-  @ObservedObject var viewModel: ViewModel
+  @EnvironmentObject var viewModel: ViewModel
   @State var username: String = ""
   @State var password: String = ""
   
   var body: some View {
-    Form {
-      Section {
-        TextField("Username", text: $username)
-          .autocapitalization(.none)
-          .disableAutocorrection(true)
-        SecureField("Password", text: $password)
-          .autocapitalization(.none)
-          .disableAutocorrection(true)
+    NavigationView {
+      Form {
+        Section {
+          TextField("Username", text: $username)
+            .autocapitalization(.none)
+            .disableAutocorrection(true)
+          SecureField("Password", text: $password)
+            .autocapitalization(.none)
+            .disableAutocorrection(true)
+        }
+        Button(action: {
+          login()
+        }) {
+          Text("Login")
+        }
+      }.navigationBarTitle("Login")
+      .alert(isPresented: $viewModel.showAlert) {
+        viewModel.alert!
       }
-      
-      Button(action: {
-        login()
-      }) {
-        Text("Login")
-      }
-      
-    }.navigationBarTitle("Login")
-    .alert(isPresented: $viewModel.showAlert) {
-      viewModel.alert!
     }
   }
   
@@ -43,7 +43,8 @@ struct LoginView: View {
 }
 
 struct LoginView_Previews: PreviewProvider {
+  static let viewModel: ViewModel = ViewModel()
   static var previews: some View {
-    LoginView(viewModel: ViewModel())
+    LoginView().environmentObject(viewModel)
   }
 }

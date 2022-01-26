@@ -244,26 +244,99 @@ extension Bundle {
   }
 }
 
+//let data =
+//  """
+//{
+//  "data": {
+//    "id": "4",
+//    "type": "users",
+//    "attributes": {
+//      "id": 4,
+//      "username": "jigims",
+//      "email": "",
+//      "firstname": "",
+//      "lastname": "",
+//      "dob": "",
+//      "phone": ""
+//    }
+//  }
+//}
+//""".data(using: .utf8)
+//
+//let decoder = JSONDecoder()
+//let f = try decoder.decode(APIData<Users>.self, from: data!)
+//let favorite = Favorite(id: 4, favoriter_id: 3, favoritee_id: 4, user: f)
+//print(favorite)
 let data =
-  """
+"""
 {
-  "data": {
-    "id": "4",
-    "type": "users",
-    "attributes": {
-      "id": 4,
-      "username": "jigims",
-      "email": "",
-      "firstname": "",
-      "lastname": "",
-      "dob": "",
-      "phone": ""
+  "id":2,
+  "status":"going",
+  "game":
+  {"data":
+    {"id":"2","type":"game","attributes":
+      {"id":2,
+        "name":"game2",
+        "date":"2020-10-29",
+        "time":"2000-01-01T13:16:43.000Z",
+        "description":"test description",
+        "private":false,
+        "longitude":0.0,
+        "latitude":0.0,
+        "invited": [],
+        "mabybe": [],
+        "going": []
+      }
     }
   }
 }
 """.data(using: .utf8)
-
 let decoder = JSONDecoder()
-let f = try decoder.decode(APIData<Users>.self, from: data!)
-let favorite = Favorite(id: 4, favoriter_id: 3, favoritee_id: 4, user: f)
-print(favorite)
+let p = try decoder.decode(Player.self, from: data!)
+let g = try decoder.decode(Player.self, from: data!)
+print(p)
+
+//
+//let j = Bundle.main.decode([Player].self, from: "players.json").first
+//let i = Bundle.main.decode([Player].self, from: "players.json").first
+//print(j)
+
+class Parser {
+
+  let urlString = "https://api.spoonacular.com/recipes/random?limitLicense=true&number=10&apiKey=2b7dcfdef8604d26a562d6c6963dc969"
+
+  func fetchRepositories(completionHandler: @escaping ([Recipe]) -> Void) {
+    AF.request(self.urlString).responseDecodable(of: Recipes.self) { (response) in
+      guard let recipes: Recipes = response.value else { return }
+      completionHandler(recipes.items)
+    }
+  }
+
+}
+
+
+
+struct Recipe: Decodable, Identifiable {
+    let id: Int
+    let title: String
+    let image: String
+    
+    enum CodingKeys : String, CodingKey {
+        case id
+        case title
+        case image
+    }
+}
+
+struct Recipes: Decodable {
+    let items: [Recipe]
+    
+    enum CodingKeys : String, CodingKey {
+        case items = "recipes"
+    }
+    
+}
+
+let parse = Parser()
+parse.fetchRepositories(completionHandler: {print($0)})
+

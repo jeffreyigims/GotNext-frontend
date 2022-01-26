@@ -10,6 +10,8 @@ import Foundation
 import SwiftUI
 import Contacts
 
+let genericContact: Contact = Contact(firstName: "Michael", lastName: "Jordan", phone: CNPhoneNumber(stringValue: "4123549286"))
+
 class Contact: Identifiable, Comparable, Codable {
   
   // MARK: Properties
@@ -40,7 +42,7 @@ class Contact: Identifiable, Comparable, Codable {
     self.firstName = firstName
     self.lastName = lastName
     self.phone = phone
-    if let image = imagePath {   // Pass the name of an xcasset image here (use this for your previews!)
+    if let image = imagePath {   // pass the name of an xcasset image here (use this for your previews!)
       self.picture = Image(image)
     }
   }
@@ -55,8 +57,13 @@ class Contact: Identifiable, Comparable, Codable {
   }
   
   func displayPhone() -> String {
-    return phone?.stringValue ?? "n/a"
+    return String(phone?.stringValue.filter("0123456789.".contains).suffix(10) ?? "n/a")
   }
+  
+  func displayPrettyPhone() -> String {
+    return String(phone?.stringValue.applyPatternOnNumbers(pattern: "(XXX) XXX-XXXX", replacementCharacter: "X") ?? "n/a")
+  }
+  
   func name() -> String {
     if let lN = lastName {
       return firstName + " " + lN
@@ -64,6 +71,7 @@ class Contact: Identifiable, Comparable, Codable {
       return firstName
     }
   }
+  
   static func == (lhs: Contact, rhs: Contact) -> Bool {
     return lhs.firstName == rhs.firstName &&
       lhs.lastName == rhs.lastName &&
@@ -71,12 +79,8 @@ class Contact: Identifiable, Comparable, Codable {
   }
   
   static func < (lhs: Contact, rhs: Contact) -> Bool {
-    if lhs.firstName == "" {
-      return false
-    }
-    if rhs.firstName == "" {
-      return true 
-    }
+    if lhs.firstName == "" { return false }
+    if rhs.firstName == "" { return true }
     if let lhsLastName = lhs.lastName {
       if let rhsLastName = rhs.lastName {
         if lhs.firstName == rhs.firstName {
@@ -85,6 +89,21 @@ class Contact: Identifiable, Comparable, Codable {
       }
     }
     return lhs.firstName < rhs.firstName
+  }
+}
+
+// https://stackoverflow.com/questions/32364055/formatting-phone-number-in-swift
+extension String {
+  func applyPatternOnNumbers(pattern: String, replacementCharacter: Character) -> String {
+    var pureNumber = self.replacingOccurrences( of: "[^0-9]", with: "", options: .regularExpression)
+    for index in 0 ..< pattern.count {
+      guard index < pureNumber.count else { return pureNumber }
+      let stringIndex = String.Index(utf16Offset: index, in: pattern)
+      let patternCharacter = pattern[stringIndex]
+      guard patternCharacter != replacementCharacter else { continue }
+      pureNumber.insert(patternCharacter, at: stringIndex)
+    }
+    return pureNumber
   }
 }
 

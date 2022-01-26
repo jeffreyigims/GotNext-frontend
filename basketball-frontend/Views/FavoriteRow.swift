@@ -11,7 +11,7 @@ import SwiftUI
 
 struct FavoriteRow: View {
   let favorite: Favorite
-  @ObservedObject var viewModel: ViewModel
+  @EnvironmentObject var viewModel: ViewModel
   @State private var isFavorited: Bool = true
   
   var body: some View {
@@ -38,11 +38,11 @@ struct FavoriteRow: View {
   
   func favoriteActions() {
     isFavorited = true
-    viewModel.favorite(favoriterId: favorite.favoriter_id, favoriteeId: favorite.favoritee_id)
+//    viewModel.favorite(favoriterId: favorite.favoriter_id, favoriteeId: favorite.favoritee_id)
   }
   
   func unfavoriteActions() {
     isFavorited = false
-    viewModel.unfavorite(favoriteeId: favorite.favoritee_id)
+//    viewModel.unfavorite(favoriteeId: favorite.favoritee_id)
   }
 }
