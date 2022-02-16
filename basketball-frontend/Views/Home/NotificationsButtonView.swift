@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NotificationsButtonView: View {
-  let inviteCount: Int
+  @Binding var invitedGames: [Game]
   let tap: () -> ()
   
   var body: some View {
@@ -21,12 +21,12 @@ struct NotificationsButtonView: View {
         .resizable()
         .aspectRatio(contentMode: .fit)
         .frame(width: 75, height: 75)
-        .foregroundColor(Color("tabBarIconColor"))
+        .foregroundColor(primaryColor)
       ZStack{
         Circle()
           .foregroundColor(Color("tabBarColor"))
           .frame(width: 20, height: 20)
-        Text("\(inviteCount)")
+          Text("\(invitedGames.count)")
           .foregroundColor(.white)
       }.offset(x: 20, y: -18)
     }
@@ -37,6 +37,6 @@ struct NotificationsButtonView: View {
 
 struct NotificationsButtonView_Previews: PreviewProvider {
   static var previews: some View {
-    NotificationsButtonView(inviteCount: 4, tap: {})
+      NotificationsButtonView(invitedGames: .constant(genericGames), tap: {})
   }
 }

@@ -1,0 +1,62 @@
+Target dependency graph (26 targets)
+Alamofire in Pods, no dependencies
+Pods-basketball-frontend in Pods, depends on:
+Alamofire in Pods (explicit)
+Alamofire in Pods, no dependencies
+Pods-basketball-frontend in Pods, depends on:
+Alamofire in Pods (explicit)
+Alamofire in Pods, no dependencies
+Pods-basketball-frontend in Pods, depends on:
+Alamofire in Pods (explicit)
+Pods-basketball-frontend-basketball-frontendUITests in Pods, depends on:
+Alamofire in Pods (explicit)
+Pods-basketball-frontend-basketball-frontendUITests in Pods, depends on:
+Alamofire in Pods (explicit)
+Pods-basketball-frontend-basketball-frontendUITests in Pods, depends on:
+Alamofire in Pods (explicit)
+Pods-basketball-frontendTests in Pods, depends on:
+Pods-basketball-frontend in Pods (explicit)
+Pods-basketball-frontendTests in Pods, depends on:
+Pods-basketball-frontend in Pods (explicit)
+Pods-basketball-frontendTests in Pods, depends on:
+Pods-basketball-frontend in Pods (explicit)
+PhotoSelectAndCrop_PhotoSelectAndCrop in PhotoSelectAndCrop, no dependencies
+PhotoSelectAndCrop in PhotoSelectAndCrop, depends on:
+PhotoSelectAndCrop_PhotoSelectAndCrop in PhotoSelectAndCrop (explicit)
+PhotoSelectAndCrop in PhotoSelectAndCrop, depends on:
+PhotoSelectAndCrop in PhotoSelectAndCrop (explicit)
+basketball-frontend in basketball-frontend, depends on:
+Pods-basketball-frontend in Pods (implicit dependency via file 'Pods_basketball_frontend.framework' in build phase 'Link Binary')
+Alamofire in Pods (implicit dependency via options '-framework Alamofire' in build setting 'OTHER_LDFLAGS')
+PhotoSelectAndCrop in PhotoSelectAndCrop (explicit)
+PhotoSelectAndCrop_PhotoSelectAndCrop in PhotoSelectAndCrop, no dependencies
+PhotoSelectAndCrop in PhotoSelectAndCrop, depends on:
+PhotoSelectAndCrop_PhotoSelectAndCrop in PhotoSelectAndCrop (explicit)
+PhotoSelectAndCrop in PhotoSelectAndCrop, depends on:
+PhotoSelectAndCrop in PhotoSelectAndCrop (explicit)
+basketball-frontend in basketball-frontend, depends on:
+Pods-basketball-frontend in Pods (implicit dependency via file 'Pods_basketball_frontend.framework' in build phase 'Link Binary')
+Alamofire in Pods (implicit dependency via options '-framework Alamofire' in build setting 'OTHER_LDFLAGS')
+PhotoSelectAndCrop in PhotoSelectAndCrop (explicit)
+basketball-frontendTests in basketball-frontend, depends on:
+basketball-frontend in basketball-frontend (explicit)
+Pods-basketball-frontendTests in Pods (implicit dependency via file 'Pods_basketball_frontendTests.framework' in build phase 'Link Binary')
+Alamofire in Pods (implicit dependency via options '-framework Alamofire' in build setting 'OTHER_LDFLAGS')
+basketball-frontendTests in basketball-frontend, depends on:
+basketball-frontend in basketball-frontend (explicit)
+Pods-basketball-frontendTests in Pods (implicit dependency via file 'Pods_basketball_frontendTests.framework' in build phase 'Link Binary')
+Alamofire in Pods (implicit dependency via options '-framework Alamofire' in build setting 'OTHER_LDFLAGS')
+basketball-frontendTests in basketball-frontend, depends on:
+Pods-basketball-frontendTests in Pods (implicit dependency via file 'Pods_basketball_frontendTests.framework' in build phase 'Link Binary')
+Alamofire in Pods (implicit dependency via options '-framework Alamofire' in build setting 'OTHER_LDFLAGS')
+basketball-frontendUITests in basketball-frontend, depends on:
+basketball-frontend in basketball-frontend (explicit)
+Pods-basketball-frontend-basketball-frontendUITests in Pods (implicit dependency via file 'Pods_basketball_frontend_basketball_frontendUITests.framework' in build phase 'Link Binary')
+Alamofire in Pods (implicit dependency via options '-framework Alamofire' in build setting 'OTHER_LDFLAGS')
+basketball-frontendUITests in basketball-frontend, depends on:
+basketball-frontend in basketball-frontend (explicit)
+Pods-basketball-frontend-basketball-frontendUITests in Pods (implicit dependency via file 'Pods_basketball_frontend_basketball_frontendUITests.framework' in build phase 'Link Binary')
+Alamofire in Pods (implicit dependency via options '-framework Alamofire' in build setting 'OTHER_LDFLAGS')
+basketball-frontendUITests in basketball-frontend, depends on:
+Pods-basketball-frontend-basketball-frontendUITests in Pods (implicit dependency via file 'Pods_basketball_frontend_basketball_frontendUITests.framework' in build phase 'Link Binary')
+Alamofire in Pods (implicit dependency via options '-framework Alamofire' in build setting 'OTHER_LDFLAGS')

@@ -1,0 +1,31 @@
+version: "Apple Swift version 5.5.2 (swiftlang-1300.0.47.5 clang-1300.0.29.30)"
+options: "9f0764b877b6631757243a497dd0ce6e912b298c38db7e7e11ea7576e9beca17"
+build_start_time: [1643406129, 486003875]
+build_end_time: [1643406140, 639492034]
+inputs:
+  ? "/Users/jeffreyigims/Desktop/basketball-frontend/DerivedData/basketball-frontend/Build/Intermediates.noindex/PhotoSelectAndCrop.build/Debug-iphonesimulator/PhotoSelectAndCrop.build/DerivedSources/resource_bundle_accessor.swift"
+  : [1643406121, 570823669]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/Color+Extensions.swift"
+  : [1643399389, 785060882]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/DeviceOrientation.swift"
+  : [1643399389, 785228490]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/Image+Extensions.swift"
+  : [1643399389, 785406112]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/ImageAttributes.swift"
+  : [1643399389, 785544872]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/ImageManipulation.swift"
+  : [1643399389, 785670995]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/ImageMoveAndScaleSheet+Extensions.swift"
+  : [1643399389, 785816192]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/ImageMoveAndScaleSheet+ViewModel.swift"
+  : [1643399389, 785995483]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/ImageMoveAndScaleSheet.swift"
+  : [1643399389, 786265373]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/ImagePane.swift"
+  : [1643399389, 786436557]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/SystemImagePicker.swift"
+  : [1643399389, 787087917]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/SystemPHPicker.swift"
+  : [1643399389, 787230253]
+  ? "/Users/jeffreyigims/Library/Developer/Xcode/DerivedData/basketball-frontend-csyrdoiiopmamihifalumtxwslrq/SourcePackages/checkouts/PhotoSelectAndCrop/Sources/ViewModifiers.swift"
+  : [1643399389, 787509918]

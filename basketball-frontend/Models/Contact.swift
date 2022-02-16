@@ -14,7 +14,6 @@ let genericContact: Contact = Contact(firstName: "Michael", lastName: "Jordan", 
 
 class Contact: Identifiable, Comparable, Codable {
   
-  // MARK: Properties
   var firstName: String = "Batman" // let's be honest, we all want Batman as a contact
   var lastName: String?
   var phone: CNPhoneNumber?

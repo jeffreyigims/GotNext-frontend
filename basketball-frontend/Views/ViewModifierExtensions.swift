@@ -55,7 +55,6 @@ struct NavigationBarModifier: ViewModifier {
     coloredAppearance.backgroundColor = .clear
     coloredAppearance.titleTextAttributes = [.foregroundColor: textColor]
     coloredAppearance.largeTitleTextAttributes = [.foregroundColor: textColor]
-    
     UINavigationBar.appearance().standardAppearance = coloredAppearance
     UINavigationBar.appearance().compactAppearance = coloredAppearance
     UINavigationBar.appearance().scrollEdgeAppearance = coloredAppearance
@@ -79,6 +78,7 @@ struct NavigationBarModifier: ViewModifier {
 
 extension View {
   func blueNavigation() -> some View { self.navigationBarColor(UIColor.systemBlue, textColor: UIColor.white) }
+  func customNavigation() -> some View { self.navigationBarColor(UIColor(primaryColor), textColor: UIColor.white) }
   func centeredContent() -> some View { self.modifier(CenteredContent()) }
   func leadingText() -> some View { self.modifier(LeadingText()) }
   func trailingText() -> some View { self.modifier(TrailingText()) }

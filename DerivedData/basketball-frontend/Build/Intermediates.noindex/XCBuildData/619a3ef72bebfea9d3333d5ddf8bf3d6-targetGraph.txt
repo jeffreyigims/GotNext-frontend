@@ -1,0 +1,13 @@
+Target dependency graph (6 targets)
+Alamofire in Pods, no dependencies
+Pods-basketball-frontend in Pods, depends on:
+Alamofire in Pods (explicit)
+PhotoSelectAndCrop_PhotoSelectAndCrop in PhotoSelectAndCrop, no dependencies
+PhotoSelectAndCrop in PhotoSelectAndCrop, depends on:
+PhotoSelectAndCrop_PhotoSelectAndCrop in PhotoSelectAndCrop (explicit)
+PhotoSelectAndCrop in PhotoSelectAndCrop, depends on:
+PhotoSelectAndCrop in PhotoSelectAndCrop (explicit)
+basketball-frontend in basketball-frontend, depends on:
+Pods-basketball-frontend in Pods (implicit dependency via file 'Pods_basketball_frontend.framework' in build phase 'Link Binary')
+Alamofire in Pods (implicit dependency via options '-framework Alamofire' in build setting 'OTHER_LDFLAGS')
+PhotoSelectAndCrop in PhotoSelectAndCrop (explicit)

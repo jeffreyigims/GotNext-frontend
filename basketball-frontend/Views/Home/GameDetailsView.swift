@@ -10,248 +10,257 @@ import SwiftUI
 import MapKit
 
 struct GameDetailsView: View {
-  // must be observable
-  @ObservedObject var viewModel: ViewModel
-  
-  @Binding var player: Player?
-  @Binding var game: Game
-  @State var centerLocation: CenterAnnotation = CenterAnnotation(id: 4, subtitle: "Subtitle", title: "Title", latitude: 20.0, longitude: 20.0)
-  
-  @State var showingUsers = false
-  @State var sharingGame = false
-  @State var usersStatus: String = "Going"
-  @State var selectedStatusList: String = "Going"
-  @State var invitingUsers = false
-  @State var showingActionSheet = false
-  @State var users: [Users] = [Users]()
-  @State private var selectedStatus = 0
-  @State var address: String = ""
-  
-  var CR: CGFloat = 18
-  
-  var body: some View {
-    NavigationView {
-      GeometryReader { geometry in
-        VStack {
-          
-          // game name
-          Text(game.name)
-            .font(.largeTitle)
-            .leadingText()
-          
-          // date and time
-          HStack {
-            Text(game.onDate())
-            Spacer()
-            Image(systemName: "clock").imageScale(.small)
-            Text(game.onTime())
-          }
-          
-          // map centered on the game location by specifying the game focus
-          MapView(viewModel: viewModel, games: $viewModel.gameAnnotations, selectedLocation: $viewModel.selectedLocation, moving: .constant(true), gameFocus: self.game)
-            .edgesIgnoringSafeArea(.all)
-            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: geometry.size.height * 0.30)
-          
-          //        Text(address)
-          Text("5700 Wilkins Avenue, Pittsburgh, PA, 15217")
-            .trailingText()
-            .font(.caption)
-            .padding([.leading,.bottom])
-          
-          Button(action: { self.viewModel.shareGame() }) {
-            Text("Share Game")
-          }
-          
-          Divider()
-          PlayerStatusButtonsView(viewModel: viewModel)
-          
-          // game status
-          Button(action: { showingActionSheet = true }) {
-            HStack{
-              Text(player?.status.toString() ?? "Not Going")
-              Image(systemName: "chevron.down")
+    // must be observable
+    @ObservedObject var viewModel: ViewModel
+    
+    @Binding var player: Player
+    @Binding var game: Game
+    @State var centerLocation: CenterAnnotation = CenterAnnotation(id: 4, subtitle: "Subtitle", title: "Title", latitude: 20.0, longitude: 20.0)
+    
+    //    @State var showingUsers = false
+    @State var sharingGame = false
+    @State var usersStatus: String = "Going"
+    @State var selectedStatusList: String = "Going"
+    @State var invitingUsers = false
+    @State var showingActionSheet = false
+    @State var users: [Users] = [Users]()
+    @State private var selectedStatus = 0
+    @State var address: String = ""
+    
+    var CR: CGFloat = 18
+    
+    var body: some View {
+        GeometryReader { geometry in
+            List {
+                
+                // game title
+                HStack(alignment: .center) {
+                    displayCalendarDate(date: Helper.toDate(date: game.date))
+                    Text(game.name)
+                        .font(.title)
+                        .centeredContent()
+                        .lineLimit(1)
+                }
+                .listRowSeparator(.hidden)
+                .padding()
+                
+                // map centered on the game location by specifying the game focus
+                MapView(viewModel: viewModel, games: $viewModel.gameAnnotations, selectedLocation: $viewModel.selectedLocation, moving: .constant(true), gameFocus: $viewModel.game, settingLocation: true)
+                    .frame(minWidth: 0, maxWidth: .infinity, idealHeight: geometry.size.height * 0.25)
+                    .listRowSeparator(.hidden)
+                
+                // game details
+                VStack {
+                    Text("Details")
+                        .font(.headline)
+                        .leadingText()
+                        .padding(.bottom, 1)
+                    
+                    // date and time
+                    HStack {
+                        Image(systemName: "clock").imageScale(.small)
+                        Text(Helper.getDateTimeProp(dateTime: Helper.toTime(time: game.time), prop: "E, MMM d, h:mm a"))
+                        Spacer()
+                    }
+                    .font(.footnote)
+                    .foregroundColor(Color.systemGray)
+                    
+                    HStack {
+                        //        Text(address)
+                        Image(systemName: "mappin.and.ellipse").imageScale(.small)
+                        Text("5700 Wilkins Avenue, Pittsburgh, PA, 15217")
+                        Spacer()
+                    }
+                    .font(.footnote)
+                    .foregroundColor(Color.systemGray)
+                }.padding([.top, .bottom], 7)
+                
+                // game description
+                VStack {
+                    Text("Description")
+                        .font(.headline)
+                        .leadingText()
+                        .padding(.bottom, 1)
+                    
+                    HStack {
+                        Text(game.description)
+                        Spacer()
+                    }
+                    .font(.footnote)
+                    .foregroundColor(Color.systemGray)
+                }.padding([.top, .bottom], 7)
+                
+                // game status
+                VStack {
+                    Text("Status")
+                        .font(.headline)
+                        .leadingText()
+                    PlayerStatusButtonsView(viewModel: viewModel)
+                    GameDetailsStatusView()
+                }.padding([.top, .bottom], 7)
+                Button(action: {}) {
+                    Text("Share Game")
+                        .font(.subheadline)
+                        .foregroundColor(.systemBlue)
+                }
+                .centeredContent()
+                .buttonStyle(BorderlessButtonStyle())
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(Color("secondaryButtonColor"))
-            .foregroundColor(.black)
-            .cornerRadius(CR)
-          }
-          
-          // invite users
-          NavigationLink(destination: InvitingUsersView()) {
-            Text("Invite Friends")
-              .padding()
-              .frame(maxWidth: .infinity)
-              .background(Color("secondaryButtonColor"))
-              .foregroundColor(.black)
-              .cornerRadius(CR)
-          }
-          
-          // game description
-          VStack(alignment: .leading){
-            Text("Game Notes:")
-              .font(.system(size: 20))
-            Text(game.description)
-              .padding()
-              .frame(maxWidth: .infinity)
-              .background(Color("secondaryButtonColor"))
-              .foregroundColor(.black)
-              .cornerRadius(CR)
-          }
+            .listStyle(InsetListStyle())
+            .navigationTitle("Game Details")
+            .navigationBarTitleDisplayMode(.inline)
+            
+            
+            //    .sheet(isPresented: $sharingGame) { ShareSheetView(activityItems: ["Share this game"]) }
+            .onAppear(perform: getAddress)
         }
-      }
-      .navigationTitle("Game Details")
-      .navigationBarTitleDisplayMode(.inline)
-      
-      //    .sheet(isPresented: $showingUsers) {
-      //      UsersStatusView(users: $users, status: selectedStatusList)
-      //    }
-      //    .actionSheet(isPresented: $showingActionSheet) {
-      //      ActionSheet(title: Text("Change Status"), message: Text("Select a status"), buttons: [
-      //
-      //        .default(Text("Maybe")) { statusChange(selectedStatus: "I'm Maybe") },
-      //        .default(Text("Going")) { statusChange(selectedStatus: "I'm Going") },
-      //        .default(Text("Not Going")) { statusChange(selectedStatus: "I'm Not Going") },
-      //        .cancel()
-      //      ])
-      //    }
-      //    .alert(isPresented: $viewModel.showAlert) {
-      //      viewModel.alert!
-      //    }
-      //    .sheet(isPresented: $sharingGame) { ShareSheetView(activityItems: ["Share this game"]) }
     }
-    .onAppear(perform: getAddress)
-  }
-  
-  // helper methods
-  func statusChange(selectedStatus: String) {
-    if let p = self.player {
-      viewModel.editPlayerStatus(playerId: p.id, status: selectedStatus)
-    } else {
-      viewModel.createPlayer(status: selectedStatus, userId: viewModel.userId!, gameId: self.game.id)
+    
+    func getAddress() {
+        Helper.coordinatesToPlacemark(latitude: game.latitude, longitude: game.longitude) { placemark in
+            self.address = Helper.parseCL(placemark: placemark)
+        }
     }
-  }
-  
-  func assignUsers(users: [Users], status: String) {
-    self.users = users
-    self.showingUsers = true
-    self.selectedStatusList = status
-  }
-  
-  func getAddress() {
-    Helper.coordinatesToPlacemark(latitude: game.latitude, longitude: game.longitude) { placemark in
-      self.address = Helper.parseCL(placemark: placemark)
-    }
-  }
 }
 
-//MARK: - Player List Button Struct
-struct PlayerListButton: View {
-  var selectedUsers: [Users]
-  var status: String
-  var image: String
-  @Binding var users: [Users]
-  @Binding var showingUsers: Bool
-  @Binding var selectedStatusList: String
-  var CR: CGFloat = 20
-  var body: some View{
-    // Button to view going players
-    Button(action: { assignUsers(users: selectedUsers, status: status)}){
-      VStack{
-        Image(systemName: image)
-          .font(.system(size: 20))
-          .frame(width: 22, height: 20)
-          .padding(.bottom, 2)
-        Text("\(selectedUsers.count) \(status)")
-      }
-      // Vstack modifiers
-      .padding([.bottom, .top], 10)
-      .padding([.leading, .trailing], 20)
-      .background(Color("primaryButtonColor"))
-      .foregroundColor(.black)
-      .cornerRadius(CR)
+@ViewBuilder func displayCalendarDate(date: Date) -> some View {
+    let monthDay: String = Helper.getDateTimeProp(dateTime: date, prop: "d")
+    let month: String = Helper.getDateTimeProp(dateTime: date, prop: "MMM").uppercased()
+    VStack {
+        Text(monthDay).font(.title2)
+        Text(month)
+            .font(.footnote)
+            .foregroundColor(Color.systemGray)
     }
-    // Button modifiers
-    .frame(maxWidth: .infinity)
-  }
-  func assignUsers(users: [Users], status: String) {
-    self.users = users
-    if (users.count > 0) {
-      self.showingUsers = true
-      self.selectedStatusList = status
-    }
-  }
 }
 
-//MARK: - Extensions
-extension Binding {
-  func onChange(_ handler: @escaping (Value) -> Void) -> Binding<Value> {
-    return Binding(
-      get: { self.wrappedValue },
-      set: { selection in
-        self.wrappedValue = selection
-        handler(selection)
-      })
-  }
-}
-
-struct GameDetailsView_Previews: PreviewProvider {
-  static var viewModel = ViewModel()
-  static var game = Game(id: 1, name: "CMU Game", date: "2021-05-15", time: "2000-01-01T22:57:58.075Z", description: "", priv: true, longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [APIData<Users>](), maybe: [APIData<Users>](), going: [APIData<Users>]())
-  static var previews: some View {
-    NavigationView {
-      GameDetailsView(viewModel: viewModel, player: .constant(nil), game: .constant(game))
-        .background(Color(UIColor.secondarySystemBackground))
-        .edgesIgnoringSafeArea(.bottom)
+enum MyStatus: String, CaseIterable, Identifiable {
+    case cannot, maybe, going
+    var id: Self { self }
+    var color: Color {
+        switch self {
+        case .cannot:
+            return Color.red
+        case .maybe:
+            return Color.white
+        case .going:
+            return Color.green
+        }
     }
-  }
+}
+struct GameDetailsStatusView: View {
+    @State private var selectedStatus: MyStatus = .going
+    var body: some View {
+        HStack {
+            Picker("Status", selection: $selectedStatus) {
+                ForEach(MyStatus.allCases) { flavor in
+                    Text(flavor.rawValue.capitalized)
+                }
+            }
+            .pickerStyle(.segmented)
+            .colorMultiply(selectedStatus.color)
+            //            .onChange(of: favoriteColor) { tag in print("Color tag: \(tag)") }
+        }
+        .frame(maxWidth: .infinity)
+    }
 }
 
 struct ListButton: View {
-  var status: String
-  var image: String
-  @Binding var users: [Users]
-  @State var showingUsers: Bool = false
-  var body: some View {
-    Button(action: { showingUsers.toggle() }) {
-      VStack{
-        Image(systemName: image)
-          .imageScale(.medium)
-          .padding(.bottom, 2)
-        Text("\(users.count) \(status)")
-      }
-      .padding([.leading, .trailing])
+    var status: String
+    var image: String
+    @Binding var users: [Users]
+    var showUsers: (String) -> ()
+    var body: some View {
+        Button(action: { showUsers(status) }) {
+            VStack{
+                Image(systemName: image)
+                    .scaledToFit()
+                    .frame(width: 10, height: 10)
+                    .padding(.bottom, 2)
+                Text("\(users.count) \(status)")
+                    .font(.footnote)
+                    .lineLimit(1)
+            }
+        }.buttonStyle(BorderlessButtonStyle())
     }
-    .sheet(isPresented: $showingUsers) {
-      NavigationView {
-        UsersListViewDynamic(users: $users)
-          .padding([.leading, .trailing])
-          .navigationTitle("\(status) Users")
-          .navigationBarTitleDisplayMode(.inline)
-      }
-    }
-  }
 }
 
 struct PlayerStatusButtonsView: View {
-  @ObservedObject var viewModel: ViewModel
-  var body: some View {
-    HStack() {
-      // button to show list of going players
-      ListButton(status: "Going", image: "checkmark", users: $viewModel.going).centeredContent()
-      Divider().frame(maxHeight: 45)
-      // button to show list of maybe players
-      ListButton(status: "Maybe", image: "questionmark.diamond", users: $viewModel.maybe).centeredContent()
-      Divider().frame(maxHeight: 45)
-      // button to show list of invited players
-      ListButton(status: "Invited", image: "envelope", users: $viewModel.invited).centeredContent()
+    @ObservedObject var viewModel: ViewModel
+    @State var showingUsers: Bool = false
+    @State var status: String = "Going"
+    @State var users: [Users] = [Users]()
+    var body: some View {
+        HStack() {
+            // button to show list of invited players
+            ListButton(status: "Invited", image: "person.fill.xmark", users: $viewModel.invited, showUsers: showForStatus).centeredContent()
+            Divider().frame(maxHeight: 40)
+            // button to show list of maybe players
+            ListButton(status: "Maybe", image: "person.fill.questionmark", users: $viewModel.maybe, showUsers: showForStatus).centeredContent()
+            Divider().frame(maxHeight: 40)
+            // button to show list of going players
+            ListButton(status: "Going", image: "person.fill.checkmark", users: $viewModel.going, showUsers: showForStatus).centeredContent()
+        }
+        .padding([.top, .bottom])
+        .frame(maxWidth: .infinity)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.gray, lineWidth: 1)
+        )
+        .foregroundColor(.black)
+        .sheet(isPresented: $showingUsers) {
+            PlayersStatusListView(users: $users, status: $status)
+        }
     }
-    .padding()
-    .frame(maxWidth: .infinity)
-    .background(Color(.white))
-    .foregroundColor(.black)
-    .cornerRadius(18)
-  }
+    func showForStatus(status: String) -> () {
+        self.status = status
+        print(status)
+        switch status {
+        case "Going":
+            self.users = viewModel.going
+        case "Maybe":
+            self.users = viewModel.maybe
+        case "Invited":
+            self.users = viewModel.invited
+        default:
+            self.users = viewModel.going
+        }
+        if self.users.count > 0 { self.showingUsers.toggle() }
+    }
+}
+
+struct PlayersStatusListView: View {
+    @Binding var users: [Users]
+    @Binding var status: String
+    var body: some View {
+        NavigationView {
+            UsersListViewDynamic(users: $users)
+                .navigationTitle(Text("\(status) Users")).foregroundColor(.black)
+                .navigationBarTitleDisplayMode(.inline)
+                .customNavigation()
+        }
+    }
+}
+
+struct GameDetailsView_Previews: PreviewProvider {
+    static var viewModel = ViewModel()
+    static var player: Player = Player(id: 4, status: Status.going)
+    static var previews: some View {
+        NavigationView {
+            GameDetailsView(viewModel: viewModel, player: .constant(player), game: .constant(genericGame))
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: {}) {
+                            Image(systemName: chevronDown)
+                        }
+                    }
+                    ToolbarItem(placement: .principal) { Text("Game Details").foregroundColor(.white) }
+                }
+                .background(Color(UIColor.secondarySystemBackground))
+                .edgesIgnoringSafeArea(.bottom)
+                .customNavigation()
+        }
+    }
 }
 

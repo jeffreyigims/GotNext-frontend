@@ -19,7 +19,7 @@ struct CreateGameButtonView: View {
         .resizable()
         .aspectRatio(contentMode: .fit)
         .frame(width: 75, height: 75)
-        .foregroundColor(Color("tabBarIconColor"))
+        .foregroundColor(primaryColor)
         .shadow(color: .gray, radius: 2, x: 1, y: 1)
         .onTapGesture { tap() }
     }

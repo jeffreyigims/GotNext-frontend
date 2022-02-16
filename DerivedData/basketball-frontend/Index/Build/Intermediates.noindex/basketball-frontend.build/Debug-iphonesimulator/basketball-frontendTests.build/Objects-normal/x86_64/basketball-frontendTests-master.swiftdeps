@@ -1,0 +1,7 @@
+version: "Apple Swift version 5.5.2 (swiftlang-1300.0.47.5 clang-1300.0.29.30)"
+options: "b49e50f14156f26046ad36c65d59b23c0dd9d38e0d6ef1551b1b31451db6841a"
+build_start_time: [1643404002, 940012931]
+build_end_time: [1643404016, 755022048]
+inputs:
+  "/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontendTests/basketball_frontendTests.swift": [1608071233, 473462343]
+  "/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontendTests/basketball_frontendViewModelTests.swift": [1607995031, 8265256]

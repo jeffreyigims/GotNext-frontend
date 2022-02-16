@@ -7,9 +7,11 @@
 //
 
 import Foundation
+import SwiftUI
 
-//let URL: String = "https://gotnext-backend.herokuapp.com"
-let URL: String = "http://192.168.1.17:3000"
+//let ADDRESS: String = "https://gotnext-backend.herokuapp.com"
+//let ADDRESS: String = "http://192.168.1.17:3000"
+let ADDRESS: String = "http://localhost:3000"
 let GET_GAMES: String = "/get_games"
 let GAMES: String = "/games"
 let CREATE_USER: String = "/create_user"
@@ -19,9 +21,12 @@ let PLAYERS: String = "/players"
 let CONTACTS: String = "/contacts"
 let SEARCH: String = "/search"
 
+// color
+let primaryColor: Color = Color("primaryColor")
+
 // icons
 let addFriendsIcon: String = "person.badge.plus"
-let myFriendsIcon: String = "person.3"
+let myFriendsIcon: String = "person.2"
 let chevronRight: String = "chevron.right"
 let chevronDown: String = "chevron.down"
 let defaultProfile: String = "person.crop.circle.fill"
@@ -53,7 +58,7 @@ enum Sheet: Identifiable {
 }
 
 enum Cover: Identifiable {
-  case addingFriends, showingFriends, editingProfile
+    case addingFriends, showingDetails, creatingGame, gameInvites, showingFriends, editingProfile, selectingLocation
   var id: Int {
     hashValue
   }

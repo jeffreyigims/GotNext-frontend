@@ -1,0 +1,48 @@
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/View\ Models/Messages.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/TabBarView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Home/UsersStatusView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Home/MapPinView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Home/HomeView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Models/GameAnnotation.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Login/SplashView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Profile/MyFriendsView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Profile/DiscoverFriendsView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Home/GameDetailsView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Home/MapView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Home/NotificationsButtonView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Helper.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Login/LandingView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Models/Models.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Models/Location.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/AppDelegate.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Login/LoginView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/SearchBarView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/SecureStore/SecureStoreQueryable.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Models/Contact.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/InvitedGamesList.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Home/GamesTableView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/SecureStore/InternetProtocol.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Creating\ Game/LocationSearchView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/FavoriteRow.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/SecureStore/SecureStore.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Profile/ContactsView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Profile/ImagePickerView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/SecureStore/InternetAuthenticationType.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/UsersListView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Home/BottomView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/ViewModifierExtensions.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Creating\ Game/CreateFormView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Login/CreateUserView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Constants.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/SceneDelegate.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/View\ Models/ViewModel.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Profile/UsersSearchView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/InvitingUsersView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/AppView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Profile/ProfileView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Home/CreateGameButtonView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/SecureStore/SecureStoreError.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Creating\ Game/CreateView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Miscellaneous/ShareSheetView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/InvitingContactsView.swift
+/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend/Views/Profile/EditProfileForm.swift

@@ -1,0 +1,4 @@
+module PhotoSelectAndCrop {
+header "PhotoSelectAndCrop-Swift.h"
+export *
+}

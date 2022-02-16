@@ -1,0 +1,65 @@
+{
+  "_buildCommand2" : {
+    "command" : "build",
+    "skipDependencies" : false,
+    "style" : "buildAndRun"
+  },
+  "buildCommand" : "build",
+  "configuredTargets" : [
+    {
+      "guid" : "2132fa6b2385cce5a37d6506466dd49fd99968f1572bd7438bdd9f160c6b1f5f"
+    }
+  ],
+  "containerPath" : "/Users/jeffreyigims/Desktop/basketball-frontend/basketball-frontend.xcworkspace",
+  "continueBuildingAfterErrors" : false,
+  "enableIndexBuildArena" : false,
+  "hideShellScriptEnvironment" : false,
+  "parameters" : {
+    "action" : "build",
+    "activeArchitecture" : "x86_64",
+    "activeRunDestination" : {
+      "disableOnlyActiveArch" : false,
+      "platform" : "iphonesimulator",
+      "sdk" : "iphonesimulator15.2",
+      "sdkVariant" : "iphonesimulator",
+      "supportedArchitectures" : [
+        "x86_64"
+      ],
+      "targetArchitecture" : "x86_64"
+    },
+    "arenaInfo" : {
+      "buildIntermediatesPath" : "/Users/jeffreyigims/Desktop/basketball-frontend/DerivedData/basketball-frontend/Build/Intermediates.noindex",
+      "buildProductsPath" : "/Users/jeffreyigims/Desktop/basketball-frontend/DerivedData/basketball-frontend/Build/Products",
+      "derivedDataPath" : "/Users/jeffreyigims/Desktop/basketball-frontend/DerivedData",
+      "indexDataStoreFolderPath" : "/Users/jeffreyigims/Desktop/basketball-frontend/DerivedData/basketball-frontend/Index/DataStore",
+      "indexEnableDataStore" : true,
+      "indexPCHPath" : "/Users/jeffreyigims/Desktop/basketball-frontend/DerivedData/basketball-frontend/Index/PrecompiledHeaders",
+      "pchPath" : "/Users/jeffreyigims/Desktop/basketball-frontend/DerivedData/basketball-frontend/Build/Intermediates.noindex/PrecompiledHeaders"
+    },
+    "configurationName" : "Debug",
+    "overrides" : {
+      "synthesized" : {
+        "table" : {
+          "ASSETCATALOG_FILTER_FOR_DEVICE_MODEL" : "iPhone14,2",
+          "ASSETCATALOG_FILTER_FOR_DEVICE_OS_VERSION" : "15.2",
+          "BUILD_ACTIVE_RESOURCES_ONLY" : "YES",
+          "CLANG_COVERAGE_MAPPING" : "YES",
+          "CLANG_PROFILE_DATA_DIRECTORY" : "/Users/jeffreyigims/Desktop/basketball-frontend/DerivedData/basketball-frontend/Build/ProfileData",
+          "ENABLE_PREVIEWS" : "NO",
+          "TARGET_DEVICE_IDENTIFIER" : "DA22C417-94BD-4B2A-A8E8-06BE2FA5ED26",
+          "TARGET_DEVICE_MODEL" : "iPhone14,2",
+          "TARGET_DEVICE_OS_VERSION" : "15.2",
+          "TARGET_DEVICE_PLATFORM_NAME" : "iphonesimulator"
+        }
+      }
+    }
+  },
+  "schemeCommand" : "launch",
+  "schemeCommand2" : "launch",
+  "shouldCollectMetrics" : false,
+  "showNonLoggedProgress" : true,
+  "useDryRun" : false,
+  "useImplicitDependencies" : true,
+  "useLegacyBuildLocations" : false,
+  "useParallelTargets" : true
+}

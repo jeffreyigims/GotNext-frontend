@@ -74,7 +74,7 @@ struct SimpleSearchBarView<T>: View {
         .padding(7)
         .padding(.horizontal, 25)
         .background(Color(UIColor.tertiarySystemBackground))
-        .cornerRadius(15)
+        .cornerRadius(10)
         .overlay(
           HStack {
             Image(systemName: "magnifyingglass")
@@ -93,7 +93,7 @@ struct SimpleSearchBarView<T>: View {
           }
         )
     }
-    .padding()
+    .padding([.leading, .trailing], 7)
   }
 }
 

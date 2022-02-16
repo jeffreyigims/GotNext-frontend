@@ -9,15 +9,17 @@
 import SwiftUI
 
 struct CreateView: View {
-  @EnvironmentObject var viewModel: ViewModel
-
-  var body: some View {
-    LocationSearchView()
-  }
+    @EnvironmentObject var viewModel: ViewModel
+    
+    var body: some View {
+        LocationSearchView()
+    }
 }
 
 struct CreateView_Previews: PreviewProvider {
-  static var previews: some View {
-    CreateView()
-  }
+    static var previews: some View {
+        NavigationView {
+            CreateView()
+        }
+    }
 }

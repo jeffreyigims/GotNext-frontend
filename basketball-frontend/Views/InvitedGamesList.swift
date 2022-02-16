@@ -10,33 +10,20 @@ import Foundation
 import SwiftUI
 
 struct InvitedGamesList: View {
-  @EnvironmentObject var viewModel: ViewModel
-
-  var body: some View {
-    //		HStack{
-    //			VStack(alignment: .leading){
-    //				Image(systemName: "arrow.left")
-    //					.font(.system(size: 24))
-    //					.onTapGesture {
-    //            self.viewModel.currentTab = Tab.home
-    //					}
-    //			}
-    //			Text("Your Invites")
-    //				.font(.largeTitle)
-    //				.foregroundColor(Color("tabBarIconColor"))
-    //				.padding()
-    //		}
-    List {
-      ForEach(viewModel.getPlayerWithStatus(status: Status.invited)) { player in
-        GameRow(player: player)
-      }
-    }.navigationBarTitle("Your Invites")
-  }
+    @EnvironmentObject var viewModel: ViewModel
+    
+    var body: some View {
+        GamesTableView(games: $viewModel.invitedGames)
+            .navigationBarTitle("Invites")
+            .navigationBarTitleDisplayMode(.inline)
+    }
 }
 
 struct InvitedGamesList_Previews: PreviewProvider {
-  static let viewModel: ViewModel = ViewModel()
-  static var previews: some View {
-    InvitedGamesList().environmentObject(viewModel)
-  }
+    static let viewModel: ViewModel = ViewModel()
+    static var previews: some View {
+        NavigationView {
+            InvitedGamesList().environmentObject(viewModel)
+        }
+    }
 }
