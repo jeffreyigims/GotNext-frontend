@@ -8,23 +8,6 @@
 
 import SwiftUI
 
-struct UsersListView: View {
-    @EnvironmentObject var viewModel: ViewModel
-    @State var users: [Users]
-    
-    var body: some View {
-        //    ScrollView {
-        //      LazyVStack {
-        List(users) { user in
-            UsersListRowView(user: user, isFavorited: user.favorite != -1)
-        }.listStyle(PlainListStyle())
-        //    .navigationBarTitleDisplayMode(.inline)
-        //    .navigationBarTitle("Going Users")
-        //      }
-        //    }
-    }
-}
-
 struct UsersListViewDynamic: View {
     @EnvironmentObject var viewModel: ViewModel
     @Binding var users: [Users]
@@ -43,33 +26,38 @@ struct UsersListRowView: View {
     let user: Users
     @State var isFavorited: Bool
     @State var alertShown: Bool = false
-    var size: CGFloat = 38
     
     var body: some View {
         HStack {
-            Image(systemName: "person.crop.circle.fill")
-                .resizable()
-                .frame(width: size, height: size)
-                .foregroundColor(primaryColor)
+            profilePic(profilePic: user.profilePicture, size: profileIconSize)
             VStack(alignment: .leading) {
                 Text(user.displayName()).font(.headline)
                 Text(user.username).font(.subheadline).foregroundColor(Color(UIColor.darkGray))
             }
             Spacer()
-            if (isFavorited) {
-                Button(action: { self.alertShown.toggle() }) {
-                    Image(systemName: "star.fill")
-                        .resizable()
-                        .frame(width: size, height: size)
-                        .foregroundColor(primaryColor)
-                }.buttonStyle(BorderlessButtonStyle())
-            } else {
-                Button(action: { self.favoriteActions() }) {
-                    Image(systemName: "star")
-                        .resizable()
-                        .frame(width: size, height: size)
-                        .foregroundColor(primaryColor)
-                }.buttonStyle(BorderlessButtonStyle())
+            if viewModel.user.id != user.id {
+                if (isFavorited) {
+                    Button(action: { self.alertShown.toggle() }) {
+                        Text("Favorited")
+                            .font(.subheadline)
+                            .frame(width: 77, height: 23)
+                            .background(primaryColor)
+                            .foregroundColor(.white)
+                            .cornerRadius(4)
+                    }.buttonStyle(PlainButtonStyle())
+                } else {
+                    Button(action: { self.favoriteActions() }) {
+                        Text("Favorite")
+                            .font(.subheadline)
+                            .frame(width: 77, height: 23)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(Color.systemGray, lineWidth: 1)
+                            )
+                            .background(.white)
+                            .foregroundColor(.black)
+                    }.buttonStyle(PlainButtonStyle())
+                }
             }
         }
         .alert(isPresented: $alertShown) {
@@ -91,14 +79,14 @@ struct UsersListRowView: View {
     }
 }
 
-
 struct UsersListView_Previews: PreviewProvider {
+    static let viewModel: ViewModel = ViewModel()
     static var previews: some View {
         NavigationView {
             ZStack {
                 Color(UIColor.secondarySystemBackground)
                     .ignoresSafeArea()
-                UsersListViewDynamic(users: .constant(genericUsers))
+                UsersListViewDynamic(users: .constant(genericUsers)).environmentObject(viewModel)
             }
             .navigationTitle("Preview Users")
             .navigationBarTitleDisplayMode(.inline)

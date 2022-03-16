@@ -9,19 +9,20 @@
 import Foundation
 import MapKit
 
-let genericCurrentUser: User = User(id: 4, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", games: [Game](), favorites: [Favorite](), favoritees: [Users](), potentials: [Users](), contacts: [Contact](), profilePicture: nil)
-let genericUser: Users = Users(id: 4, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", favorite: -1)
+let genericCurrentUser: User = User(id: 4, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", games: [Game](), favorites: [Users](), favoritees: [Users](), potentials: [Users](), contacts: [Contact](), profilePicture: nil)
+let genericPotentialUser: PotentialUser = PotentialUser(userId: "genericUserId", identityToken: nil, authCode: nil, email: "genericEmail@gmail.com", givenName: "Michael", familyName: "Jordan", state: "genericState")
+let genericUser: Users = Users(id: 4, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", favorite: -1, profilePicture: nil)
 let genericFavorite: Favorite = Favorite(id: 3, favoriter_id: 2, favoritee_id: 4, user: APIData<Users>(data: genericUser))
-let genericUsers: [Users] = [genericUser, Users(id: 9, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", favorite: 4), Users(id: 5, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", favorite: -1), Users(id: 7, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", favorite: 7), Users(id: 8, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", favorite: -1)]
-let genericGame: Game = Game(id: 4, name: "Carnegie Game", date: "2021-05-15", time: "2000-01-01T22:57:58.075Z", description: "This game will be played at Carnegie Mellon campus and will be open to the public", priv: true, longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [Users](), maybe: [Users](), going: [Users](), player: nil)
-let genericGames: [Game] = [Game(id: 4, name: "CMU Game", date: "2021-05-15", time: "2000-01-01T22:57:58.075Z", description: "This game will be played at Carnegie Mellon campus and will be open to the public", priv: true,   longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [Users](), maybe: [Users](), going: [Users](), player: nil),
-                            Game(id: 5, name: "CMU Game", date: "2021-05-15", time: "2000-01-01T22:57:58.075Z", description: "This game will be played at Carnegie Mellon campus and will be open to the public", priv: true,   longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [Users](), maybe: [Users](), going: [Users](), player: nil),
-                            Game(id: 6, name: "CMU Game", date: "2021-05-17", time: "2000-01-01T22:57:58.075Z", description: "This game will be played at Carnegie Mellon campus and will be open to the public", priv: true,   longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [Users](), maybe: [Users](), going: [Users](), player: nil),
-                            Game(id: 7, name: "CMU Game", date: "2021-05-17", time: "2000-01-01T22:57:58.075Z", description: "This game will be played at Carnegie Mellon campus and will be open to the public", priv: true,   longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [Users](), maybe: [Users](), going: [Users](), player: nil)]
+let genericUsers: [Users] = [genericUser, Users(id: 9, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", favorite: 4, profilePicture: nil), Users(id: 5, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", favorite: -1, profilePicture: nil), Users(id: 7, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", favorite: 7, profilePicture: nil), Users(id: 8, username: "mjordan", email: "mjordan@gmail.com", firstName: "Michael", lastName: "Jordan", dob: "12/10/1999", phone: "4123549286", favorite: -1, profilePicture: nil)]
+let genericGame: Game = Game(id: 4, name: "Carnegie Game", date: "2021-05-15", time: "2000-01-01T22:57:58.075Z", desc: "This game will be played at Carnegie Mellon campus and will be open to the public", priv: true, longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [Users](), maybe: [Users](), going: [Users](), player: Player(id: 4, status: Status.going), shortAddress: "5700 Wilkins Ave", longAddress: "5700 Wilkins Avenue, Pittsburgh, PA")
+let genericGames: [Game] = [Game(id: 4, name: "CMU Game", date: "2021-05-15", time: "2000-01-01T22:57:58.075Z", desc: "This game will be played at Carnegie Mellon campus and will be open to the public", priv: true,   longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [Users](), maybe: [Users](), going: [Users](), player: Player(id: 4, status: Status.going), shortAddress: "5700 Wilkins Ave", longAddress: "5700 Wilkins Avenue, Pittsburgh, PA"),
+                            Game(id: 5, name: "CMU Game", date: "2021-05-15", time: "2000-01-01T22:57:58.075Z", desc: "This game will be played at Carnegie Mellon campus and will be open to the public", priv: true,   longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [Users](), maybe: [Users](), going: [Users](), player: Player(id: 4, status: Status.going), shortAddress: "5700 Wilkins Ave", longAddress: "5700 Wilkins Avenue, Pittsburgh, PA"),
+                            Game(id: 6, name: "CMU Game", date: "2021-05-17", time: "2000-01-01T22:57:58.075Z", desc: "This game will be played at Carnegie Mellon campus and will be open to the public", priv: true,   longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [Users](), maybe: [Users](), going: [Users](), player: Player(id: 4, status: Status.going), shortAddress: "5700 Wilkins Ave", longAddress: "5700 Wilkins Avenue, Pittsburgh, PA"),
+                            Game(id: 7, name: "CMU Game", date: "2021-05-17", time: "2000-01-01T22:57:58.075Z", desc: "This game will be played at Carnegie Mellon campus and will be open to the public", priv: true,   longitude: -79.94456661125692, latitude: 40.441405662286684, invited: [Users](), maybe: [Users](), going: [Users](), player: Player(id: 4, status: Status.going), shortAddress: "5700 Wilkins Ave", longAddress: "5700 Wilkins Avenue, Pittsburgh, PA")]
 
 struct Player: Codable, Identifiable {
     let id: Int
-    let status: Status
+    var status: Status
     enum CodingKeys: String, CodingKey {
         case id
         case status
@@ -41,14 +42,12 @@ struct Favorite: Codable, Identifiable {
     }
 }
 
-struct UserLogin: Decodable {
+struct UserLogin: Codable {
     let id: Int
     let username: String
     let api_key: String
     enum CodingKeys: String, CodingKey {
-        case id
-        case username
-        case api_key
+        case id, username, api_key
     }
 }
 

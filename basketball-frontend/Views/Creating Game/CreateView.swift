@@ -12,7 +12,7 @@ struct CreateView: View {
     @EnvironmentObject var viewModel: ViewModel
     
     var body: some View {
-        LocationSearchView()
+        LocationSearchView().navigationViewStyle(DefaultNavigationViewStyle())
     }
 }
 

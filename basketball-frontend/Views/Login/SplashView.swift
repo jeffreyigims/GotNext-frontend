@@ -9,19 +9,19 @@
 import SwiftUI
 
 struct SplashView: View {
-  
-  var body: some View {
-    VStack {
-      Image("logo")
-      Text("Warming up...")
-        .font(Font.largeTitle)
-        .foregroundColor(Color("tabBarColor"))
+    
+    var body: some View {
+        VStack {
+            Image("logo")
+            Text("Warming up...")
+                .font(.largeTitle)
+                .foregroundColor(primaryColor)
+        }
     }
-  }
 }
 
 struct SplashView_Previews: PreviewProvider {
-  static var previews: some View {
-    SplashView()
-  }
+    static var previews: some View {
+        SplashView()
+    }
 }

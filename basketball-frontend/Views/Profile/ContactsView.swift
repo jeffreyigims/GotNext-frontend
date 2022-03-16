@@ -15,76 +15,91 @@ struct ContactsView: View {
     @State var contacts: [Contact]
     
     var body: some View {
-        ForEach(contacts) { contact in
+        List(contacts) { contact in
             ContactsRowView(contact: contact)
                 .padding([.top, .bottom], 8)
-        }
+        }.listStyle(PlainListStyle())
     }
 }
 
 struct ContactsRowView: View {
+    @EnvironmentObject var viewModel: ViewModel
     let contact: Contact
-    let size : CGFloat = 38
-    
     @State var invitingContact: Bool = false
+    @State var invited: Bool = false
     @State var recipients: [String] = [String]()
-    @State var message: String = "Please come to the game"
     
     var body: some View {
         ZStack {
             HStack {
-                Image(systemName: defaultProfile)
+                Image(systemName: defaultProfileIcon)
                     .resizable()
-                    .frame(width: size, height: size)
-                    .foregroundColor(primaryColor)
+                    .frame(width: profileIconSize, height: profileIconSize)
+                    .foregroundColor(.black)
                 VStack(alignment: .leading) {
                     Text(contact.name()).font(.headline)
                     Text(contact.displayPrettyPhone()).font(.subheadline).foregroundColor(Color(UIColor.darkGray))
                 }
                 Spacer()
-                Button(action: {
-                    self.recipients = [contact.displayPhone()]
-                    self.invitingContact.toggle()
-                }) {
+                if self.invited {
                     HStack {
                         Image(systemName: inviteContact)
                             .imageScale(.small)
-                            .foregroundColor(primaryColor)
-                        Text("Invite").foregroundColor(primaryColor)
+                            .foregroundColor(.white)
+                        Text("Invited")
+                            .font(.subheadline)
+                            .foregroundColor(.white)
                     }
-                }.buttonStyle(BorderlessButtonStyle())
+                    .frame(width: 77, height: 23)
+                    .background(primaryColor)
+                    .cornerRadius(4)
+                } else {
+                    Button(action: {
+                        self.recipients = [contact.displayPhone()]
+                        self.invitingContact.toggle()
+                    }) {
+                        HStack {
+                            Image(systemName: inviteContact)
+                                .imageScale(.small)
+                                .foregroundColor(.black)
+                            Text("Invite")
+                                .font(.subheadline)
+                                .foregroundColor(.black)
+                        }
+                        .frame(width: 77, height: 23)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(Color.systemGray, lineWidth: 1)
+                        )
+                        .background(.white)
+                    }.buttonStyle(BorderlessButtonStyle())
+                }
             }
             if self.invitingContact {
-                MessageSheetView(recipients: self.$recipients, body: self.$message, completion: {_ in self.invitingContact.toggle() })
+                MessageSheetView(recipients: self.$recipients, body: $viewModel.inviteMessage, completion: handleDone)
             }
         }
-        //    .sheet(isPresented: $invitingContact, content: { MessageSheetView(recipients: self.$recipients, body: self.$message, completion: handleDone(_:)) })
-        //    MessageSheetView(recipients: self.$recipients, body: self.$message, completion: handleDone(_:))
     }
-}
-
-func handleDone(_ result: MessageComposeResult) {
-    switch result {
-    case .cancelled:
-        //
-        break
-    case .sent:
-        //
-        break
-    case .failed:
-        //
-        break
-    @unknown default:
-        //
-        break
+    func handleDone(_ result: MessageComposeResult) {
+        switch result {
+        case .cancelled:
+            break
+        case .sent:
+            self.invited = true
+            break
+        case .failed:
+            break
+        @unknown default:
+            break
+        }
+        self.invitingContact.toggle()
     }
 }
 
 struct ContactsView_Previews: PreviewProvider {
-    static let contacts: [Contact] = Array(repeating: genericContact, count: 8)
     static var previews: some View {
         NavigationView {
-            ContactsView(contacts: contacts).background(Color(UIColor.secondarySystemBackground))
+            ContactsView(contacts: genericContacts).background(Color(UIColor.secondarySystemBackground))
         }
     }
 }

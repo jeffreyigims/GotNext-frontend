@@ -11,24 +11,39 @@
 			<key>orderHint</key>
 			<integer>3</integer>
 		</dict>
-		<key>basketball-frontend 1.xcscheme_^#shared#^_</key>
+		<key>GotNextNotificationServiceExtension.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
-		</dict>
-		<key>basketball-frontend 2.xcscheme_^#shared#^_</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>6</integer>
 		</dict>
 		<key>basketball-frontend.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>1</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>7E09C4A627D2BC2B00EA7732</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7E27B82827D06C9A00988912</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7E538FA027D2B12700074A78</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7E538FBA27D2B9DF00074A78</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>D3E18A402550C46B00AEB104</key>
 		<dict>
 			<key>primary</key>

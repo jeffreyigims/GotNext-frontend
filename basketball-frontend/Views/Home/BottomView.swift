@@ -25,7 +25,8 @@ struct BottomView<Content: View>: View {
             .frame(
                 width: 60,
                 height: 6
-            ).onTapGesture {
+            )
+            .onTapGesture {
                 self.isOpen.toggle()
             }
     }
@@ -41,10 +42,15 @@ struct BottomView<Content: View>: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                self.indicator.padding()
+                ZStack {
+                    Rectangle()
+                        .fill(primaryColor)
+                        .frame(height: 37)
+                    self.indicator.padding()
+                }
                 self.content
             }.frame(width: geometry.size.width, height: self.maxHeight, alignment: .top)
-                .background(Color("tabBarIconColor"))
+                .background(Color(UIColor.secondarySystemBackground))
                 .cornerRadius(16)
                 .frame(height: geometry.size.height, alignment: .bottom)
                 .offset(y: max(self.offset + self.slide, 0))
@@ -64,13 +70,15 @@ struct BottomView<Content: View>: View {
     }
 }
 
-//struct BottomView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        GeometryReader { geometry in
-//            BottomView(isOpen: .constant(true), maxHeight: geometry.size.height * 0.84) {
-//                GamesTableView(games: .constant(genericGames))
-//            }.edgesIgnoringSafeArea(.all)
-//        }
-//    }
-//}
+struct BottomView_Previews: PreviewProvider {
+    static var previews: some View {
+        GeometryReader { geometry in
+            BottomView(isOpen: .constant(true), maxHeight: geometry.size.height * 0.84) {
+                Text("Bottom View")
+            }
+            .background(Color(UIColor.secondarySystemBackground))
+            .edgesIgnoringSafeArea(.all)
+        }
+    }
+}
 

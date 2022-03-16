@@ -12,7 +12,7 @@ struct ModalButtonView<ButtonContent: View, ModalContent: View>: View {
     let title: String
     @ViewBuilder var buttonContent: ButtonContent
     @ViewBuilder var modalContent: ModalContent
-    @State private var isPresented: Bool = false
+    @Binding var isPresented: Bool
     var body: some View {
         Button(action: { isPresented.toggle() }) {
             HStack {
@@ -26,6 +26,7 @@ struct ModalButtonView<ButtonContent: View, ModalContent: View>: View {
             .foregroundColor(.black)
             .cornerRadius(12)
         }
+        .buttonStyle(PlainButtonStyle())
         .fullScreenCover(isPresented: $isPresented) {
             ModalView(title: title) {
                 modalContent
@@ -45,7 +46,22 @@ struct ModalView<Content: View>: View {
                 .toolbar { ModalToolbar(presentationMode: presentationMode, title: title) }
                 .background(Color(UIColor.secondarySystemBackground))
                 .edgesIgnoringSafeArea(.bottom)
-                .customNavigation()
+                .navigationBarColor(UIColor(primaryColor), textColor: .white)
+        }.navigationViewStyle(StackNavigationViewStyle())
+    }
+}
+
+struct SheetView<Content: View>: View {
+    let title: String
+    @ViewBuilder var content: Content
+    var body: some View {
+        NavigationView {
+            content
+                .navigationTitle(title)
+                .navigationBarColor(UIColor(primaryColor), textColor: UIColor(Color.white))
+                .navigationBarTitleDisplayMode(.inline)
+                .background(Color(UIColor.secondarySystemBackground))
+                .edgesIgnoringSafeArea(.bottom)
         }.navigationViewStyle(StackNavigationViewStyle())
     }
 }
@@ -62,3 +78,54 @@ struct ModalToolbar: ToolbarContent {
         ToolbarItem(placement: .principal) { Text(title).foregroundColor(Color.white) }
     }
 }
+
+struct GameDetailsModalView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @ObservedObject var viewModel: ViewModel
+    @State var sharingGame: Bool = false
+    
+    var body: some View {
+        NavigationView {
+            GameDetailsView(viewModel: viewModel, sharingGame: $sharingGame, game: $viewModel.game)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                            Image(systemName: chevronDown)
+                        }
+                    }
+                    ToolbarItem(placement: .principal) { Text("Game Details").foregroundColor(.white) }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: { sharingGame.toggle() }) {
+                            Image(systemName: shareButton)
+                                .imageScale(.medium)
+                        }
+                    }
+                }
+                .background(Color(UIColor.secondarySystemBackground))
+                .edgesIgnoringSafeArea(.bottom)
+                .navigationBarColor(UIColor(primaryColor), textColor: .white)
+        }.navigationViewStyle(StackNavigationViewStyle())
+    }
+}
+
+
+@ViewBuilder func profilePic(profilePic: String?, size: CGFloat) -> some View {
+    if let profilePicture: String = profilePic {
+        AsyncImage(url: URL(string: profilePicture)) { image in
+            image
+                .resizable()
+                .frame(width: size, height: size)
+                .clipShape(Circle())
+        } placeholder: {
+            ProgressView()
+                .frame(width: size, height: size)
+        }
+    } else {
+        Image(systemName: defaultProfileIcon)
+            .resizable()
+            .frame(width: size, height: size)
+            .foregroundColor(.black)
+    }
+}
+

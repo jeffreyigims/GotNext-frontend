@@ -11,6 +11,10 @@ import SwiftUI
 import Contacts
 
 let genericContact: Contact = Contact(firstName: "Michael", lastName: "Jordan", phone: CNPhoneNumber(stringValue: "4123549286"))
+let genericContacts: [Contact] = [Contact(firstName: "Michael", lastName: "Jordan", phone: CNPhoneNumber(stringValue: "4123449286")),
+                                  Contact(firstName: "JJ", lastName: "Igims", phone: CNPhoneNumber(stringValue: "4123549286")),
+                                  Contact(firstName: "Drew", lastName: "Brees", phone: CNPhoneNumber(stringValue: "4133549786")),
+                                  Contact(firstName: "Odell", lastName: "Beckham", phone: CNPhoneNumber(stringValue: "4123549276"))]
 
 class Contact: Identifiable, Comparable, Codable {
   
@@ -41,7 +45,7 @@ class Contact: Identifiable, Comparable, Codable {
     self.firstName = firstName
     self.lastName = lastName
     self.phone = phone
-    if let image = imagePath {   // pass the name of an xcasset image here (use this for your previews!)
+    if let image = imagePath { // pass the name of an xcasset image here (use this for your previews!)
       self.picture = Image(image)
     }
   }

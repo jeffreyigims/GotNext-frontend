@@ -32,7 +32,7 @@ struct MyFriendsView: View {
     }
     
     func search() {
-        searchResults = userSearch == "" ? viewModel.favorites : viewModel.favorites.filter { fav in fav.firstName.localizedCaseInsensitiveContains(userSearch) || fav.lastName.localizedCaseInsensitiveContains(userSearch) ||  fav.username.localizedCaseInsensitiveContains(userSearch)}
+        searchResults = userSearch == "" ? viewModel.user.favorites : viewModel.user.favorites.filter { fav in fav.firstName.localizedCaseInsensitiveContains(userSearch) || fav.lastName.localizedCaseInsensitiveContains(userSearch) ||  fav.username.localizedCaseInsensitiveContains(userSearch)}
     }
 }
 

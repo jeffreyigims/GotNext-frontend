@@ -11,87 +11,81 @@ import MapKit
 
 class Helper {
     
-    static func onTime(time: String) -> String {
-        let timeFormatter = DateFormatter()
-        timeFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
-        timeFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        timeFormatter.timeZone = TimeZone(abbreviation: "GMT")
-        let formattedTime = timeFormatter.date(from: time)
-        if let time: Date = formattedTime {
-            timeFormatter.dateFormat = "h:mm a"
-            return timeFormatter.string(from: time)
-        } else {
-            return ""
-        }
-    }
-    
-    static func onDate(date: String) -> String {
+    static func toDate(timeString: String, dateString: String) -> Date {
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateFormatter.timeZone = TimeZone(abbreviation: "EST")
-        let formattedDate = dateFormatter.date(from: date)
-        if let date: Date = formattedDate {
-            dateFormatter.dateFormat = "MM/dd/yyyy"
-            return dateFormatter.string(from: date)
-        } else {
-            return ""
-        }
-    }
-    
-    static func toDate(date: String) -> Date {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
-        dateFormatter.dateFormat = "MM/dd/yyyy"
-        dateFormatter.timeZone = TimeZone(abbreviation: "EST")
-        let formattedDate = dateFormatter.date(from: date)
+        let time: String = matchRegex(input: timeString, regex: "T(.*)Z")
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        dateFormatter.dateFormat = "yyyy-MM-ddHH:mm:ss.SSS"
+        let formattedDate = dateFormatter.date(from: dateString+time)
         if let date: Date = formattedDate {
             return date
         } else {
-            return Date()
-        }
-    }
-    
-    static func toTime(time: String) -> Date {
-        let timeFormatter = DateFormatter()
-        timeFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
-        timeFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        timeFormatter.timeZone = TimeZone(abbreviation: "EST")
-        let formattedTime = timeFormatter.date(from: time)
-        if let time: Date = formattedTime {
-            return time
-        } else {
+            print("[INFO] could not convert date \(dateString) and time \(timeString) to date")
             return Date()
         }
     }
     
     static func getDateTimeProp(dateTime: Date, prop: String) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
         formatter.dateFormat = prop
-        formatter.timeZone = TimeZone(abbreviation: "EST")
+        formatter.calendar = NSCalendar.current
+        formatter.timeZone = TimeZone.current
         let prop = formatter.string(from: dateTime)
         return prop
     }
     
+    static func matchRegex(input: String, regex: String) -> String {
+        do {
+            let regex = try NSRegularExpression(pattern: regex, options: NSRegularExpression.Options.caseInsensitive)
+            let matches = regex.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
+            
+            if let match = matches.first {
+                let range = match.range(at:1)
+                if let swiftRange = Range(range, in: input) {
+                    let ouput = input[swiftRange]
+                    return String(ouput)
+                }
+            }
+        } catch {
+            return ""
+        }
+        return ""
+    }
+    
     static func toAcceptableDate(date: Date) -> String {
         let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(abbreviation: "EST")
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return dateFormatter.string(from: date)
     }
     
-    static func weekday(date: String) -> String {
+    static func weekday(date: Date) -> String {
         let calendar = Calendar.current
-        let dateC = self.toDate(date: date)
-        if calendar.isDateInToday(dateC) {
+        if calendar.isDateInToday(date) {
             return "Today"
         } else {
             let dateFormatter = DateFormatter()
+            dateFormatter.calendar = NSCalendar.current
+            dateFormatter.timeZone = TimeZone.current
             dateFormatter.dateFormat = "EEEE"
-            return dateFormatter.string(from: dateC).capitalizingFirstLetter()
+            return dateFormatter.string(from: date).capitalizingFirstLetter()
         }
     }
+    
+    static func stringToDate(date: String, pattern: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = pattern
+        dateFormatter.calendar = NSCalendar.current
+        dateFormatter.timeZone = TimeZone.current
+        let formattedDate = dateFormatter.date(from: date)
+        if let date: Date = formattedDate {
+            return date
+        } else {
+            print("[INFO] could not convert \(date) with pattern \(pattern) to date")
+            return Date()
+        }
+    }
+    
     
     // Credit to Robert Chen, thorntech.com
     static func parseAddress(selectedItem: MKPlacemark) -> String {
@@ -114,6 +108,20 @@ class Helper {
             secondSpace,
             // state
             selectedItem.administrativeArea ?? ""
+        )
+        return addressLine
+    }
+    
+    static func getShortAddress(placemark: MKPlacemark) -> String {
+        // put a space between "4" and "Melrose Place"
+        let firstSpace = (placemark.subThoroughfare != nil && placemark.thoroughfare != nil) ? " " : ""
+        let addressLine = String(
+            format:"%@%@%@",
+            // street number
+            placemark.subThoroughfare ?? "",
+            firstSpace,
+            // street name
+            placemark.thoroughfare ?? ""
         )
         return addressLine
     }
@@ -171,9 +179,9 @@ class Helper {
                              " is inviting you to a pick-up basketball game, ",
                              game?.name ?? "",
                              ", on ",
-                             game?.onDate() ?? "",
-                             " at ",
-                             game?.onTime() ?? ""
+                             //                             game?.onDate() ?? "",
+                             " at "//,
+                             //                             game?.onTime() ?? ""
         )
         return message
     }
@@ -184,14 +192,14 @@ class Helper {
         let loc = CLLocation(latitude: latitude, longitude: longitude)
         let geocoder = CLGeocoder()
         // look up the location and pass it to the completion handler
-        geocoder.reverseGeocodeLocation(loc,
-                                        completionHandler: { (placemarks, error) in
+        geocoder.reverseGeocodeLocation(loc, completionHandler: { (placemarks, error) in
             if error == nil {
                 let firstLocation = placemarks?[0]
                 completionHandler(firstLocation)
             }
             else {
-                // an error occurred during geocoding.
+                // an error occurred during geocoding
+                print("[INFO] an error occurred during geocoding with \(error!)")
                 completionHandler(nil)
             }
         })

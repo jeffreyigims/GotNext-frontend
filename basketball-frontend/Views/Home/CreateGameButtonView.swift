@@ -9,25 +9,26 @@
 import SwiftUI
 
 struct CreateGameButtonView: View {
-  let tap: () -> ()
-  var body: some View {
-    ZStack{
-      Circle()
-        .foregroundColor(Color(.white))
-        .frame(width:75, height:75)
-      Image(systemName: "plus.circle.fill")
-        .resizable()
-        .aspectRatio(contentMode: .fit)
-        .frame(width: 75, height: 75)
-        .foregroundColor(primaryColor)
-        .shadow(color: .gray, radius: 2, x: 1, y: 1)
-        .onTapGesture { tap() }
+    let tap: () -> ()
+    var body: some View {
+        Button(action: tap) {
+            ZStack{
+                Circle()
+                    .foregroundColor(.white)
+                    .frame(width:75, height:75)
+                Image(systemName: "plus.circle.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 75, height: 75)
+                    .foregroundColor(primaryColor)
+                    .shadow(color: .gray, radius: 2, x: 1, y: 1)
+            }
+        }
     }
-  }
 }
 
 struct CreateGameButtonView_Previews: PreviewProvider {
-  static var previews: some View {
-    CreateGameButtonView(tap: {})
-  }
+    static var previews: some View {
+        CreateGameButtonView(tap: {})
+    }
 }

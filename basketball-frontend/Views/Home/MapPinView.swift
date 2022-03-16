@@ -16,8 +16,8 @@ struct MapPinView: View {
       .resizable()
       .scaledToFit()
       .frame(width: 45, height: 45)
-      .foregroundColor(.red)
-      .position(x: geometry.size.width/2, y: geometry.size.height/2-40)
+      .foregroundColor(primaryColor)
+      .position(x: geometry.size.width/2, y: geometry.size.height/2-45)
   }
 }
 

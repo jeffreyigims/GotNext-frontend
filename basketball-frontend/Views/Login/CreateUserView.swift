@@ -22,7 +22,6 @@ struct CreateUserView: View {
   @State var passwordConfirmation: String = ""
   
   var body: some View {
-    NavigationView {
       Form {
         Section(header: Text("GENERAL")) {
           TextField("Username", text: $username)
@@ -49,16 +48,16 @@ struct CreateUserView: View {
             .disableAutocorrection(true)
         }
         
-        Button(action: {
-          createUser()
-        }) {
-          Text("Sign Up")
-        }
-      }.navigationBarTitle("Create Your Profile")
-      .alert(isPresented: $viewModel.showAlert) {
-        viewModel.alert!
+        Button(action: createUser) {
+          Text("Sign Up").foregroundColor(.blue)
+        }.buttonStyle(DefaultButtonStyle())
       }
-    }
+      .navigationBarTitle("Create Your Profile")
+      .navigationBarTitleDisplayMode(.inline)
+      .customNavigation()
+//      .alert(isPresented: $viewModel.showAlert) {
+//        viewModel.alert!
+//    }
   }
   
   func createUser() {

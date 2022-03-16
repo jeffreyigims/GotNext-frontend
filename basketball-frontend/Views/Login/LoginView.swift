@@ -10,41 +10,41 @@ import Foundation
 import SwiftUI
 
 struct LoginView: View {
-  @EnvironmentObject var viewModel: ViewModel
-  @State var username: String = ""
-  @State var password: String = ""
-  
-  var body: some View {
-    NavigationView {
-      Form {
-        Section {
-          TextField("Username", text: $username)
-            .autocapitalization(.none)
-            .disableAutocorrection(true)
-          SecureField("Password", text: $password)
-            .autocapitalization(.none)
-            .disableAutocorrection(true)
+    @EnvironmentObject var viewModel: ViewModel
+    @State var username: String = ""
+    @State var password: String = ""
+    @State var didError: Bool = false
+    
+    var body: some View {
+        Form {
+            Section {
+                TextField("Username", text: $username)
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+                SecureField("Password", text: $password)
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+            }
+            Button(action: login) {
+                Text("Login").foregroundColor(.blue)
+            }.buttonStyle(DefaultButtonStyle())
         }
-        Button(action: {
-          login()
-        }) {
-          Text("Login")
-        }
-      }.navigationBarTitle("Login")
-      .alert(isPresented: $viewModel.showAlert) {
-        viewModel.alert!
-      }
+        .navigationBarTitle("Login")
+        .navigationBarTitleDisplayMode(.inline)
+        .customNavigation()
+        .alert("Invalid Login", isPresented: $didError) {
+            Button("Got It") {}
+        } message: { Text("The username or password you entered was invalid") }
     }
-  }
-  
-  func login() {
-    viewModel.login(username: username, password: password)
-  }
+    
+    func login() {
+        viewModel.login(username: username, password: password)
+    }
 }
 
 struct LoginView_Previews: PreviewProvider {
-  static let viewModel: ViewModel = ViewModel()
-  static var previews: some View {
-    LoginView().environmentObject(viewModel)
-  }
+    static let viewModel: ViewModel = ViewModel()
+    static var previews: some View {
+        LoginView().environmentObject(viewModel)
+    }
 }

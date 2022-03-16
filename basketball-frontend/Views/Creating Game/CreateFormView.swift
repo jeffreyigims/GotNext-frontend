@@ -14,6 +14,7 @@ struct CreateFormView: View {
     let location: MKMapItem
     @State var game: Games = Games(id: 4, name: "", date: "", time: "", desc: "", priv: false, longitude: 2.0, latitude: 2.0)
     @State var date: Date = Date()
+    @State var address: String = ""
     
     var body: some View {
         Form {
@@ -23,7 +24,7 @@ struct CreateFormView: View {
             Section(header: Text("LOCATION")) {
                 VStack(alignment: .leading) {
                     Text(location.name ?? "").bold()
-                    Text(Helper.parseAddress(selectedItem: location.placemark))
+                    Text(address)
                 }
             }
             Section(header: Text("LOGISTICS")) {
@@ -34,23 +35,22 @@ struct CreateFormView: View {
                 TextField("Description", text: $game.desc)
             }
             Section {
-                Button(action: {
-                    createGame()
-                }) {
+                Button(action: createGame) {
                     Text("Create Game").centeredContent()
-                }
+                }.buttonStyle(PlainButtonStyle())
             }
         }
         .navigationBarTitle("Game Details")
         .navigationBarTitleDisplayMode(.inline)
         .customNavigation()
+        .onAppear(perform: { self.address = Helper.parseAddress(selectedItem: location.placemark) })
         .alert(isPresented: $viewModel.showAlert) {
             viewModel.alert!
         }
     }
     
     func createGame() {
-        viewModel.createGame(name: game.name, date: date, description: game.description, priv: game.priv, latitude: self.location.placemark.location!.coordinate.latitude, longitude: self.location.placemark.location!.coordinate.longitude)
+        viewModel.createGame(name: game.name, date: date, description: game.desc, priv: game.priv, latitude: self.location.placemark.location!.coordinate.latitude, longitude: self.location.placemark.location!.coordinate.longitude, shortAddress: Helper.getShortAddress(placemark: self.location.placemark), longAddress: Helper.parseAddress(selectedItem: self.location.placemark))
     }
 }
 

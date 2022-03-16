@@ -11,56 +11,24 @@ import MapKit
 
 struct HomeView: View {
     @EnvironmentObject var viewModel: ViewModel
-    @State var isOpen: Bool = false
     @Binding var games: [Game]
     
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .topTrailing){
-                MapView(viewModel: viewModel, games: $viewModel.gameAnnotations, selectedLocation: $viewModel.selectedLocation, moving: .constant(false), gameFocus: $viewModel.game, settingLocation: false).edgesIgnoringSafeArea(.all)
+                MapView(viewModel: viewModel, selectedLocation: $viewModel.selectedLocation, gameFocus: $viewModel.game, settingLocation: $viewModel.focusOnGame).edgesIgnoringSafeArea(.all)
                 VStack {
-                    NotificationsButtonView(invitedGames: $viewModel.invitedGames, tap: viewModel.showInvites)
+                    NotificationsButtonView(userGames: $viewModel.userGames, tap: viewModel.showInvites)
                     CreateGameButtonView(tap: viewModel.startCreating)
                 }.padding()
                 // content is passed as a closure to the bottom view
-                BottomView(isOpen: self.$isOpen, maxHeight: geometry.size.height * 0.84) {
+                BottomView(isOpen: $viewModel.isOpen, maxHeight: geometry.size.height * 0.84) {
                     GamesTableView(games: $games)
                 }.edgesIgnoringSafeArea(.all)
             }
         }
     }
 }
-
-struct SelectLocationButtonView: View {
-    var tapAction: () -> ()
-    var body: some View {
-        Button(action: tapAction ) {
-            Text("Select Location")
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color("primaryButtonColor"))
-                .foregroundColor(.black)
-                .cornerRadius(20)
-                .padding([.trailing, .leading])
-        }
-    }
-}
-
-struct CancelSelectLocationButtonView: View {
-    var tapAction: () -> ()
-    var body: some View {
-        Button(action: tapAction) {
-            Text("Cancel")
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color("secondaryButtonColor"))
-                .foregroundColor(.black)
-                .cornerRadius(20)
-                .padding([.trailing, .leading])
-        }
-    }
-}
-
 
 struct HomeView_Previews: PreviewProvider {
     static let viewModel: ViewModel = ViewModel()

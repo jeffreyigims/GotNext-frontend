@@ -11,20 +11,13 @@ import MapKit
 import MessageUI
 
 struct AppView: View {
-    @ObservedObject var viewModel: ViewModel = ViewModel()
-    init() {
-        // for changing the color of the tabbar
-        //    UITabBar.appearance().isTranslucent = false
-        //    UITabBar.appearance().backgroundColor = UIColor(named: "tabBarIconColor")
-        //    UITabBar.appearance().barTintColor = UIColor(named: "tabBarIconColor")
-    }
+    @EnvironmentObject var viewModel: ViewModel
     
     var body: some View {
         pageContent()
             .fullScreenCover(isPresented: $viewModel.showingCover, onDismiss: viewModel.dismissCover, content: coverContent)
             .sheet(isPresented: $viewModel.showingSheet, onDismiss: viewModel.dismissSheet, content: sheetContent)
-            .onAppear(perform: viewModel.tryLogin)
-            .environmentObject(viewModel)
+            .onAppear(perform: viewModel.tryAppleLogin)
     }
 }
 
@@ -38,8 +31,11 @@ extension AppView {
     @ViewBuilder func pageContent() -> some View {
         switch viewModel.currentScreen {
         case .app:
-            TabBarView(settingLocation: $viewModel.settingLocation, selectedLocation: $viewModel.selectedLocation).alert(isPresented: $viewModel.showAlert) { viewModel.alert! }
+            TabBarView().alert(isPresented: $viewModel.showAlert) { viewModel.alert! }
             .edgesIgnoringSafeArea(.bottom)
+            .requestPushNotifications()
+        case .additionalInformation:
+            AdditionalInformationView()
         case .loginSplash:
             SplashView()
         case .createUser:
@@ -53,34 +49,21 @@ extension AppView {
         }
     }
     
-    //  @ViewBuilder func tabContent() -> some View {
-    //    switch viewModel.currentTab {
-    //    case .home:
-    //      HomeView(settingLocation: $viewModel.settingLocation, selectedLocation: $viewModel.selectedLocation)
-    //    case .profile:
-    //      ProfileView()
-    //    case .invites:
-    //      InvitedGamesList()
-    //    }
-    //  }
-    
     @ViewBuilder func sheetContent() -> some View {
         NavigationView {
             switch viewModel.activeSheet {
             case .creatingGame:
                 CreateView()
             case .showingDetails:
-                GameDetailsView(viewModel: viewModel, player: $viewModel.player, game: $viewModel.game)
+                Text("Game Details")
             case .selectingLocation:
-                if let pl = Helper.CLtoMK(placemark: viewModel.selectedLocation) {
-                    CreateFormView(location: MKMapItem(placemark: pl))
-                }
+                CreateFormView(location: viewModel.selectedLocation)
             case .searchingUsers:
-                UsersSearchView()
+                Text("Users Search View")
             case .gameInvites:
-                InvitedGamesList()
+                InvitedGamesList(groupedGames: viewModel.invitedGamesGrouped)
             case .discoveringFriends:
-                DiscoverFriendsView(favoritees: viewModel.favoritees, potentials: [Users]())
+                Text("Hello World")
             case .sendingMessage:
                 MessageUIView(recipients: viewModel.contact, game: viewModel.game, completion: handleCompletion(_:))
             case .sharingGame:
@@ -96,26 +79,20 @@ extension AppView {
                 CreateView()
             }
         case .showingDetails:
-            ModalView(title: "Game Details") {
-                GameDetailsView(viewModel: viewModel, player: $viewModel.player, game: $viewModel.game)
-            }
+            GameDetailsModalView(viewModel: viewModel)
         case .gameInvites:
             ModalView(title: "Game Invites") {
-                InvitedGamesList()
+                InvitedGamesList(groupedGames: viewModel.invitedGamesGrouped)
             }
         case .selectingLocation:
-            if let pl = Helper.CLtoMK(placemark: viewModel.selectedLocation) {
-                ModalView(title: "Game Invites") {
-                    CreateFormView(location: MKMapItem(placemark: pl))
-                }
-            }
+            CreateFormView(location: viewModel.selectedLocation)
         case .addingFriends:
             Text("Hello World")
         case .showingFriends:
             Text("Hello World")
         case .editingProfile:
             ModalView(title: viewModel.user.username) {
-                EditProfileForm().alert(isPresented: $viewModel.showAlert) { viewModel.alert! }
+                //                EditProfileForm().alert(isPresented: $viewModel.showAlert) { viewModel.alert! }
             }
         }
     }

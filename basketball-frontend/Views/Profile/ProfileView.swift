@@ -11,32 +11,21 @@ import PhotoSelectAndCrop
 
 struct ProfileView: View {
     @EnvironmentObject var viewModel: ViewModel
-    @State var editingProfile = false
     
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                if let profilePicture: String = viewModel.user.profilePicture {
-                    AsyncImage(url: URL(string: profilePicture)) { image in
-                        image
-                            .resizable()
-                            .frame(width: geometry.size.width/2.5, height: geometry.size.width/2.5)
-                            .clipShape(Circle())
-                            .foregroundColor(primaryColor)
-                            .padding([.top])
-                    } placeholder: {
-                        ProgressView()
-                            .frame(width: geometry.size.width/2.5, height: geometry.size.width/2.5)
-                    }
-                } else {
-                    Image(systemName: defaultProfile)
-                        .resizable()
-                        .frame(width: geometry.size.width/2.5, height: geometry.size.width/2.5)
-                        .foregroundColor(primaryColor)
-                        .padding(.top)
-                }
-                Button(action: viewModel.sendContacts) { Text("Send Contacts")}
+                viewModel.user.picture
+                    .resizable()
+                    .frame(width: geometry.size.width/2.5, height: geometry.size.width/2.5)
+                    .clipShape(Circle())
+                    .padding([.top])
+                Button(action: viewModel.fetchContacts) { Text("Fetch Contacts")}
+//                Button(action: viewModel.sendContacts) { Text("Send Contacts")}
                 Button(action: viewModel.refreshCurrentUser) { Text("Refresh User")}
+//                Button(action: viewModel.createDevice) { Text("Send Token")}
+//                Button(action: viewModel.saveToken) { Text("Save Token")}
+//                Button(action: viewModel.loadToken) { Text("Load Token")}
                 Text(viewModel.user.displayName())
                     .bold()
                     .padding(.top)
@@ -52,20 +41,26 @@ struct ProfileView: View {
                 Spacer()
             }
             .padding()
+            .onAppear(perform: viewModel.requestContactAccess)
+            .fullScreenCover(isPresented: $viewModel.editingProfile) {
+                ModalView(title: viewModel.user.username) {
+                    EditProfileForm(user: viewModel.user, image: ImageAttributes(image: viewModel.user.picture, originalImage: nil, croppedImage: nil, scale: 1, xWidth: geometry.size.width/2.5, yHeight: geometry.size.width/2.5)).alert(isPresented: $viewModel.showAlert) { viewModel.alert! }
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("My Profile")
                         .foregroundColor(.white)
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: viewModel.editProfile ) { Text("Edit") }
+                    Button(action: { viewModel.editingProfile.toggle() }) { Text("Edit") }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: viewModel.tryLogout) { Text("Logout") }
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .customNavigation()
+            .navigationBarColor(UIColor(primaryColor), textColor: .white)
         }
     }
 }
@@ -98,7 +93,7 @@ struct AddFriendsButtonView: View {
                     Text("Add Favorites")
                 }
             },
-            modalContent: { DiscoverFriendsView(favoritees: viewModel.favoritees.filter { !viewModel.favoritesSet.contains($0.id) }, potentials: viewModel.potentials.filter { !viewModel.favoritesSet.contains($0.id) }) })
+            modalContent: { DiscoverFriendsView(favoritees: viewModel.favoriteesNotFavorited, potentials: viewModel.potentials, searchResults: $viewModel.searchResults, contacts: viewModel.contactPotentials) }, isPresented: $viewModel.showingDiscoverFavorites)
     }
 }
 
@@ -115,7 +110,7 @@ struct MyFriendsButtonView: View {
                     Text("My Favorites")
                 }
             },
-            modalContent: { MyFriendsView(searchResults: viewModel.favorites) })
+            modalContent: { MyFriendsView(searchResults: viewModel.user.favorites) }, isPresented: $viewModel.showingMyFavorites)
     }
 }
 
